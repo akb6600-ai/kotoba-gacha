@@ -1,0 +1,1083 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ことばガチャ</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  background:linear-gradient(180deg,#fff7fb,#f8fbff 55%,#fffdf3);
+  color:#222;
+}
+.wrap{max-width:720px;margin:auto;padding:18px 12px 42px}
+.logo{text-align:center;font-weight:900;font-size:clamp(34px,10vw,60px);margin:6px 0}
+.logo span:nth-child(1){color:#ff5d9e}
+.logo span:nth-child(2){color:#ff9f43}
+.logo span:nth-child(3){color:#ffd84d}
+.logo span:nth-child(4){color:#62d59d}
+.logo span:nth-child(5){color:#58a6ff}
+.logo span:nth-child(6){color:#a77bf3}
+.sub{text-align:center;color:#666;font-size:13px;margin-bottom:14px}
+.card{
+  background:#fff;
+  border-radius:18px;
+  padding:12px;
+  margin-bottom:12px;
+  box-shadow:0 5px 14px rgba(0,0,0,.07);
+}
+.mode,.speech{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.demoToggleBtn{
+  position:relative;width:92px;height:40px;border:0;border-radius:999px;
+  background:#28c76f;color:#fff;font-weight:900;font-size:14px;
+  padding:0 42px 0 10px;transition:.2s;flex:0 0 auto
+}
+.demoToggleBtn.off{background:#aaa;padding:0 10px 0 42px}
+.demoKnob{
+  position:absolute;width:32px;height:32px;right:4px;top:4px;
+  background:#fff;border-radius:50%;box-shadow:0 2px 5px #888;transition:.2s
+}
+.demoToggleBtn.off .demoKnob{right:56px}
+.mode small{display:block;color:#666;margin-top:3px}
+.switch{position:relative;width:58px;height:34px;flex:0 0 auto}
+.switch input{display:none}
+.slider{position:absolute;inset:0;background:#ccc;border-radius:999px}
+.slider:before{
+  content:"";position:absolute;width:28px;height:28px;left:3px;top:3px;
+  background:#fff;border-radius:50%;transition:.2s;box-shadow:0 2px 5px #999
+}
+.switch input:checked+.slider{background:#28c76f}
+.switch input:checked+.slider:before{transform:translateX(24px)}
+.notice{
+  display:none;background:#fff3f5;border:1px solid #ff9bbd;color:#8a2248;
+  border-radius:14px;padding:10px 12px;margin-bottom:12px;font-size:13px
+}
+.rowhead{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px}
+.rowhead b{font-size:15px}
+.count{font-size:16px;font-weight:800;color:#555}
+.entry{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:5px}
+input[type=text]{
+  min-width:0;width:100%;border:1.5px solid #ddd;border-radius:14px;
+  padding:12px 10px;font-size:16px
+}
+button{font-family:inherit}
+.add,.check,.gacha,.tool,.close,.del{
+  border:none;border-radius:14px;font-weight:800;white-space:nowrap
+}
+.add,.check{padding:11px 8px;font-size:13px}
+.add{background:#ffd84d;color:#222;font-weight:900;border:2px solid #e5b900}
+.check{background:#e9f4ff;color:#1769aa}
+.gacha{
+  width:100%;font-size:25px;padding:16px;margin:4px 0 12px;color:#fff;
+  background:linear-gradient(90deg,#ff5d9e,#ff9f43,#ffd84d,#62d59d,#58a6ff,#a77bf3)
+}
+.result{
+  min-height:108px;background:#171717;color:#fff;border-radius:20px;
+  padding:20px 16px;display:flex;align-items:center;gap:10px;overflow:hidden
+}
+.ghost{font-size:32px;flex:0 0 auto}
+.ticker{position:relative;min-width:0;flex:1;overflow:hidden;height:42px}
+.resultText{
+  position:absolute;left:0;top:5px;
+  white-space:nowrap;font-size:22px;font-weight:800;
+  opacity:0;filter:blur(8px);
+  transform:translateX(0)
+}
+.resultText.show{animation:ghostin 2s ease forwards}
+@keyframes ghostin{
+  0%{opacity:0;filter:blur(10px)}
+  55%{opacity:.55;filter:blur(4px)}
+  100%{opacity:1;filter:blur(0)}
+}
+.toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.tool{padding:12px;background:#fff;border:1.5px solid #ddd;font-size:15px}
+.help{text-align:center;color:#777;font-size:12px;line-height:1.5;margin-top:8px}
+.footer{text-align:center;margin-top:18px;color:#555;font-weight:700;font-size:14px}
+.footer em{font-style:normal;color:#ff5d9e;font-size:17px}
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);
+  display:none;align-items:flex-end;justify-content:center;padding:12px;z-index:50
+}
+.sheet{
+  background:#fff;border-radius:22px 22px 14px 14px;width:min(720px,100%);
+  max-height:80vh;overflow:auto;padding:16px
+}
+.sheet h3{margin:2px 0 12px}
+.wordGroup{margin:13px 0}
+.word{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  border-bottom:1px solid #eee;padding:8px 0
+}
+.del{background:#fff0f3;color:#b92554;padding:6px 10px}
+.close{width:100%;margin-top:10px;background:#222;color:#fff;padding:12px}
+@media(max-width:390px){
+  .wrap{padding-left:8px;padding-right:8px}
+  .card{padding:10px}
+  input[type=text]{font-size:15px}
+  .add,.check{font-size:12px;padding:10px 7px}
+}
+
+.demoToggleBtn.is-on { opacity: 1; background:#22c55e; }
+.demoToggleBtn.is-off { opacity: 1; background:#9ca3af; padding:0 10px 0 42px; }
+.demoToggleBtn.is-off #demoKnob { right:56px; }
+.demoToggleBtn.is-on #demoKnob { right:4px; }
+
+
+/* V24: dense POP-style typography */
+h1{
+  letter-spacing:-0.10em !important;
+  font-weight:1000 !important;
+  line-height:.92 !important;
+  transform:scaleX(.94);
+  transform-origin:center;
+}
+.tagline, .footer, footer{
+  letter-spacing:-0.075em !important;
+  font-weight:900 !important;
+  line-height:1.02 !important;
+}
+
+
+.rainbowLogo{
+ width:calc(100% + 28px);margin:0 -14px 14px;display:flex;justify-content:center;
+ align-items:flex-end;white-space:nowrap;overflow:visible;
+ font-family:"Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+ font-size:clamp(48px,15vw,78px);font-weight:1000;line-height:.82;
+ letter-spacing:-.17em!important;transform:none!important;
+}
+.rainbowLogo span{display:inline-block;text-shadow:0 3px 0 #fff,0 5px 8px rgba(0,0,0,.12)}
+.rainbowLogo span:nth-child(1){color:#ff4757;transform:translateY(17px) rotate(-9deg)}
+.rainbowLogo span:nth-child(2){color:#ff9f1a;transform:translateY(6px) rotate(-5deg)}
+.rainbowLogo span:nth-child(3){color:#ffd60a;transform:translateY(-5px) rotate(-2deg)}
+.rainbowLogo span:nth-child(4){color:#34c759;transform:translateY(-5px) rotate(2deg)}
+.rainbowLogo span:nth-child(5){color:#168cff;transform:translateY(6px) rotate(5deg)}
+.rainbowLogo span:nth-child(6){color:#a855f7;transform:translateY(17px) rotate(9deg)}
+
+
+/* V26: stronger hand-drawn rainbow arc logo */
+.rainbow-arc{
+  display:flex !important;
+  justify-content:center;
+  align-items:flex-end;
+  gap:0 !important;
+  margin:20px auto 18px !important;
+  padding:12px 0 2px !important;
+  font-size:clamp(52px,15vw,78px) !important;
+  font-weight:900 !important;
+  line-height:.95 !important;
+  letter-spacing:-.10em !important;
+  white-space:nowrap;
+  overflow:visible !important;
+}
+.rainbow-arc span{
+  display:inline-block;
+  transform-origin:50% 100%;
+  text-shadow:0 1px 0 rgba(0,0,0,.03);
+}
+.rainbow-arc .c1{transform:translateY(15px) rotate(-9deg);}
+.rainbow-arc .c2{transform:translateY(5px) rotate(-5deg);}
+.rainbow-arc .c3{transform:translateY(-5px) rotate(-1deg);}
+.rainbow-arc .c4{transform:translateY(-5px) rotate(2deg);}
+.rainbow-arc .c5{transform:translateY(5px) rotate(6deg);}
+.rainbow-arc .c6{transform:translateY(15px) rotate(10deg);}
+
+
+/* V28: strong rainbow arch on the actual .logo element */
+.logo{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:flex-end !important;
+  gap:0 !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  font-size:clamp(56px,16vw,84px) !important;
+  line-height:.78 !important;
+  margin:22px -12px 20px !important;
+  letter-spacing:-.16em !important;
+  font-weight:1000 !important;
+}
+.logo span{
+  display:inline-block !important;
+  transform-origin:50% 100% !important;
+  text-shadow:0 2px 0 rgba(255,255,255,.9),0 4px 8px rgba(0,0,0,.08);
+}
+.logo span:nth-child(1){transform:translateY(26px) rotate(-11deg) !important;}
+.logo span:nth-child(2){transform:translateY(10px) rotate(-6deg) !important;}
+.logo span:nth-child(3){transform:translateY(-7px) rotate(-2deg) !important;}
+.logo span:nth-child(4){transform:translateY(-13px) rotate(2deg) !important;}
+.logo span:nth-child(5){transform:translateY(8px) rotate(7deg) !important;}
+.logo span:nth-child(6){transform:translateY(25px) rotate(12deg) !important;}
+
+
+/* V29: full-width rounded Gothic rainbow logo */
+.logo{
+  width:calc(100% + 18px) !important;
+  margin:22px -9px 22px !important;
+  padding:10px 0 4px !important;
+  display:flex !important;
+  justify-content:space-between !important;
+  align-items:flex-end !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  font-family:"Hiragino Maru Gothic ProN","Hiragino Maru Gothic Pro","Yu Gothic","Meiryo",sans-serif !important;
+  font-size:clamp(58px,17vw,88px) !important;
+  font-weight:900 !important;
+  line-height:.78 !important;
+  letter-spacing:-.12em !important;
+}
+.logo span{display:inline-block !important;}
+.logo span:nth-child(1){transform:translateY(28px) rotate(-10deg) !important;}
+.logo span:nth-child(2){transform:translateY(11px) rotate(-5deg) !important;}
+.logo span:nth-child(3){transform:translateY(-5px) rotate(-2deg) !important;}
+.logo span:nth-child(4){transform:translateY(-11px) rotate(2deg) !important;}
+.logo span:nth-child(5){transform:translateY(10px) rotate(6deg) !important;}
+.logo span:nth-child(6){transform:translateY(28px) rotate(10deg) !important;}
+
+
+/* V30: heavier logo lettering */
+.logo{
+  font-weight:1000 !important;
+  -webkit-text-stroke:1.2px currentColor;
+}
+
+
+/* V31: BIG POP gacha button */
+#gachaBtn, .gachaBtn, button.gacha, [data-gacha]{
+  min-height:150px !important;
+  width:100% !important;
+  border-radius:36px !important;
+  font-size:clamp(54px,14vw,78px) !important;
+  font-weight:1000 !important;
+  letter-spacing:.04em !important;
+  line-height:1 !important;
+  text-shadow:0 4px 0 rgba(0,0,0,.16), 0 7px 14px rgba(0,0,0,.10) !important;
+  box-shadow:0 9px 0 rgba(90,60,120,.16), 0 14px 24px rgba(0,0,0,.10) !important;
+  transform:rotate(-1deg) !important;
+  overflow:visible !important;
+}
+#gachaBtn:active, .gachaBtn:active, button.gacha:active, [data-gacha]:active{
+  transform:translateY(5px) rotate(1deg) scale(.985) !important;
+  box-shadow:0 4px 0 rgba(90,60,120,.16) !important;
+}
+
+
+/* V32: footer catchphrase wider */
+.footerTagline, .tagline, .responsibility, footer strong{
+  width:100% !important;
+  max-width:none !important;
+  white-space:nowrap !important;
+  letter-spacing:.035em !important;
+  transform:scaleX(1.08) !important;
+  transform-origin:center !important;
+  text-align:center !important;
+}
+
+
+/* V33: MAX-width responsibility line + huge gacha lettering */
+.footerTagline, .tagline, .responsibility, footer strong{
+  display:block !important;
+  width:100% !important;
+  max-width:none !important;
+  white-space:nowrap !important;
+  text-align:center !important;
+  font-size:clamp(25px,6.3vw,34px) !important;
+  font-weight:900 !important;
+  letter-spacing:-.055em !important;
+  transform:scaleX(1.13) !important;
+  transform-origin:center center !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+
+#gachaBtn, .gachaBtn, button.gacha, [data-gacha]{
+  min-height:160px !important;
+  padding:4px 2px !important;
+  font-size:clamp(78px,21vw,112px) !important;
+  font-weight:1000 !important;
+  letter-spacing:-.06em !important;
+  line-height:.82 !important;
+  white-space:nowrap !important;
+}
+
+
+/* V34: full-width responsibility slogan */
+.footerTagline, .tagline, .responsibility, footer strong{
+  display:block !important;
+  box-sizing:border-box !important;
+  width:100% !important;
+  max-width:none !important;
+  padding:0 !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+  white-space:nowrap !important;
+  text-align:center !important;
+  font-size:clamp(27px,6.8vw,38px) !important;
+  font-weight:1000 !important;
+  letter-spacing:-.075em !important;
+  transform:scaleX(1.17) !important;
+  transform-origin:center center !important;
+}
+
+/* glittery "責任" */
+.sparkleResponsibility{
+  display:inline-block !important;
+  font-weight:1000 !important;
+  color:#ff3f93 !important;
+  background:linear-gradient(90deg,#ff2f88 0%,#ff8bc4 22%,#fff4a8 43%,#ffffff 50%,#ffd45c 58%,#ff62aa 78%,#ff2f88 100%) !important;
+  -webkit-background-clip:text !important;
+  background-clip:text !important;
+  -webkit-text-fill-color:transparent !important;
+  text-shadow:0 0 5px rgba(255,80,160,.35),0 0 11px rgba(255,215,80,.22) !important;
+  position:relative !important;
+  transform:scale(1.10) !important;
+  margin:0 .08em !important;
+}
+.sparkleResponsibility::before{
+  content:"✦" !important;
+  position:absolute !important;
+  left:-.38em !important;
+  top:-.48em !important;
+  font-size:.48em !important;
+  color:#ffd85a !important;
+  -webkit-text-fill-color:#ffd85a !important;
+  text-shadow:0 0 5px #fff !important;
+}
+.sparkleResponsibility::after{
+  content:"✧" !important;
+  position:absolute !important;
+  right:-.34em !important;
+  top:-.28em !important;
+  font-size:.44em !important;
+  color:#ff8fc5 !important;
+  -webkit-text-fill-color:#ff8fc5 !important;
+  text-shadow:0 0 5px #fff !important;
+}
+
+
+/* V35: target the ACTUAL footer */
+.footer{
+  box-sizing:border-box !important;
+  width:100% !important;
+  max-width:none !important;
+  margin:26px 0 8px !important;
+  padding:0 1px !important;
+  white-space:nowrap !important;
+  text-align:center !important;
+  font-size:clamp(25px,6.5vw,36px) !important;
+  font-weight:1000 !important;
+  letter-spacing:-.075em !important;
+  transform:scaleX(1.08) !important;
+  transform-origin:center !important;
+  overflow:visible !important;
+}
+.footer .sparkleResponsibility{
+  display:inline-block !important;
+  margin:0 .08em !important;
+  font-size:1.12em !important;
+  font-weight:1000 !important;
+  background:linear-gradient(90deg,#ff2d8d,#ff8ac5,#ffd84f,#fff7b0,#ff69b4,#ff2d8d) !important;
+  -webkit-background-clip:text !important;
+  background-clip:text !important;
+  color:transparent !important;
+  -webkit-text-fill-color:transparent !important;
+  text-shadow:0 0 6px rgba(255,70,150,.28) !important;
+  position:relative !important;
+}
+.footer .sparkleResponsibility::before{
+  content:"✦" !important;
+  position:absolute !important;
+  left:-.38em !important;
+  top:-.52em !important;
+  font-size:.48em !important;
+  color:#ffd84f !important;
+  -webkit-text-fill-color:#ffd84f !important;
+  text-shadow:0 0 5px white !important;
+}
+.footer .sparkleResponsibility::after{
+  content:"✦" !important;
+  position:absolute !important;
+  right:-.38em !important;
+  top:-.42em !important;
+  font-size:.42em !important;
+  color:#ff75b5 !important;
+  -webkit-text-fill-color:#ff75b5 !important;
+  text-shadow:0 0 5px white !important;
+}
+
+
+/* V36: animated sparkle only on 責任 */
+.footer .sparkleResponsibility{
+  background-size:260% 100% !important;
+  animation:responsibilityShine 1.8s linear infinite, responsibilityGlow 1.15s ease-in-out infinite alternate !important;
+}
+.footer .sparkleResponsibility::before{
+  animation:sparkleLeft 1.25s ease-in-out infinite !important;
+}
+.footer .sparkleResponsibility::after{
+  animation:sparkleRight 1.25s ease-in-out .55s infinite !important;
+}
+
+@keyframes responsibilityShine{
+  0%{background-position:120% 0}
+  100%{background-position:-120% 0}
+}
+@keyframes responsibilityGlow{
+  0%{
+    filter:brightness(1);
+    transform:scale(1.08);
+  }
+  100%{
+    filter:brightness(1.55) drop-shadow(0 0 7px rgba(255,215,80,.75));
+    transform:scale(1.13);
+  }
+}
+@keyframes sparkleLeft{
+  0%,100%{opacity:.25;transform:scale(.55) rotate(0deg)}
+  45%{opacity:1;transform:scale(1.35) rotate(100deg)}
+}
+@keyframes sparkleRight{
+  0%,100%{opacity:.2;transform:scale(.5) rotate(0deg)}
+  50%{opacity:1;transform:scale(1.45) rotate(-110deg)}
+}
+
+
+/* V37: flashy animated main title */
+.logo{
+  position:relative !important;
+  overflow:visible !important;
+  filter:drop-shadow(0 5px 5px rgba(255,80,170,.20)) !important;
+}
+.logo span{
+  display:inline-block !important;
+  font-weight:1000 !important;
+  -webkit-text-stroke:1.4px rgba(255,255,255,.55) !important;
+  text-shadow:
+    0 3px 0 rgba(90,40,120,.16),
+    0 0 8px rgba(255,255,255,.75),
+    0 0 14px rgba(255,120,200,.28) !important;
+  animation:titlePop 1.7s ease-in-out infinite alternate !important;
+}
+.logo span:nth-child(1){animation-delay:0s !important}
+.logo span:nth-child(2){animation-delay:.10s !important}
+.logo span:nth-child(3){animation-delay:.20s !important}
+.logo span:nth-child(4){animation-delay:.30s !important}
+.logo span:nth-child(5){animation-delay:.40s !important}
+.logo span:nth-child(6){animation-delay:.50s !important}
+
+.logo::before{
+  content:"✦" !important;
+  position:absolute !important;
+  left:3% !important;
+  top:-14px !important;
+  font-size:30px !important;
+  color:#ffd84f !important;
+  text-shadow:0 0 8px white,0 0 13px #ffdc65 !important;
+  animation:titleSparkA 1.35s ease-in-out infinite !important;
+}
+.logo::after{
+  content:"✦" !important;
+  position:absolute !important;
+  right:2% !important;
+  top:8px !important;
+  font-size:25px !important;
+  color:#ff70bb !important;
+  text-shadow:0 0 8px white,0 0 13px #ff91ca !important;
+  animation:titleSparkB 1.35s ease-in-out .55s infinite !important;
+}
+
+@keyframes titlePop{
+  0%{
+    filter:brightness(1) saturate(1);
+    text-shadow:0 3px 0 rgba(90,40,120,.16),0 0 5px rgba(255,255,255,.65) !important;
+  }
+  100%{
+    filter:brightness(1.28) saturate(1.35);
+    text-shadow:0 4px 0 rgba(90,40,120,.18),0 0 10px white,0 0 18px rgba(255,100,190,.52) !important;
+  }
+}
+@keyframes titleSparkA{
+  0%,100%{opacity:.20;transform:scale(.55) rotate(0deg)}
+  50%{opacity:1;transform:scale(1.35) rotate(120deg)}
+}
+@keyframes titleSparkB{
+  0%,100%{opacity:.18;transform:scale(.50) rotate(0deg)}
+  50%{opacity:1;transform:scale(1.45) rotate(-120deg)}
+}
+
+/* V41: automatic 500-word test fill */
+.autoFill{
+  width:100%;border:none;border-radius:16px;padding:13px 10px;margin:2px 0 10px;
+  font-size:17px;font-weight:900;background:#eef7ff;color:#1769aa;
+  box-shadow:inset 0 0 0 2px #b9dcff;
+}
+.autoFill:active{transform:translateY(1px)}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo"><span>こ</span><span>と</span><span>ば</span><span>ガ</span><span>チ</span><span>ャ</span></div>
+  <div class="sub">登録した言葉をあなたのスマホが勝手に組み合わせます</div>
+
+  <div class="card mode">
+    <div>
+      <strong>📺 放送（実演）モード</strong>
+      <small>くだらないけど、人にやさしくしましょうね 🙂</small>
+    </div>
+    <button id="demoToggleBtn" class="demoToggleBtn" type="button" aria-pressed="true">
+      <span id="demoStateText">ON</span>
+      <span id="demoKnob" class="demoKnob"></span>
+    </button>
+  </div>
+
+  <div id="notice" class="notice"></div>
+
+  <div class="card" id="card-who">
+    <div class="rowhead"><b>① 〇〇は（誰・何）</b><span id="c-who" class="count">登録 0 / 100</span></div>
+    <form class="entry wordForm" data-key="who">
+      <input id="i-who" type="text" maxlength="60" enterkeyhint="done" placeholder="例：チャッピーは">
+      <button class="add" type="button">＋登録</button>
+      <button class="check" type="button" data-check="who">確認</button>
+    </form>
+  </div>
+
+  <div class="card" id="card-place">
+    <div class="rowhead"><b>② 場所</b><span id="c-place" class="count">登録 0 / 100</span></div>
+    <form class="entry wordForm" data-key="place">
+      <input id="i-place" type="text" maxlength="60" enterkeyhint="done" placeholder="例：お寺で">
+      <button class="add" type="button">＋登録</button>
+      <button class="check" type="button" data-check="place">確認</button>
+    </form>
+  </div>
+
+  <div class="card" id="card-with">
+    <div class="rowhead"><b>③ 〇〇と（誰・何と）</b><span id="c-with" class="count">登録 0 / 100</span></div>
+    <form class="entry wordForm" data-key="with">
+      <input id="i-with" type="text" maxlength="60" enterkeyhint="done" placeholder="例：おじさんと">
+      <button class="add" type="button">＋登録</button>
+      <button class="check" type="button" data-check="with">確認</button>
+    </form>
+  </div>
+
+  <div class="card" id="card-move">
+    <div class="rowhead"><b>④ 動き</b><span id="c-move" class="count">登録 0 / 100</span></div>
+    <form class="entry wordForm" data-key="move">
+      <input id="i-move" type="text" maxlength="60" enterkeyhint="done" placeholder="例：踊って">
+      <button class="add" type="button">＋登録</button>
+      <button class="check" type="button" data-check="move">確認</button>
+    </form>
+  </div>
+
+  <div class="card" id="card-end">
+    <div class="rowhead"><b>⑤ どうした・どうなった</b><span id="c-end" class="count">登録 0 / 100</span></div>
+    <form class="entry wordForm" data-key="end">
+      <input id="i-end" type="text" maxlength="60" enterkeyhint="done" placeholder="例：逃げた">
+      <button class="add" type="button">＋登録</button>
+      <button class="check" type="button" data-check="end">確認</button>
+    </form>
+  </div>
+
+  <button class="autoFill" id="autoFillBtn" type="button">🤖 自動入力（各100語）</button>
+
+  <button class="gacha" id="gachaBtn" type="button">🎰 ガチャ！</button>
+
+  <div class="result">
+    <div class="ghost">👻</div>
+    <div id="ticker" class="ticker">
+      <div id="resultText" class="resultText">ここに結果が出ます</div>
+    </div>
+  </div>
+
+  <div class="card speech" style="margin-top:12px">
+    <span>🔊 読み上げ</span>
+    <label class="switch">
+      <input id="speechToggle" type="checkbox">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="toolbar">
+    <button class="tool" id="saveBtn" type="button">💾 記憶</button>
+    <button class="tool" id="listBtn" type="button">📋 一覧</button>
+  </div>
+
+  <div class="help">各項目100個まで保存できます。自動入力は不足分だけ補充します。放送モードは毎回ONで始まります。</div>
+  <div class="footer">くだらないのは、あなたの<span class="sparkleResponsibility">責任</span>です。</div>
+</div>
+
+<div id="modal" class="modal">
+  <div class="sheet">
+    <h3 id="modalTitle">登録した言葉</h3>
+    <div id="wordList"></div>
+    <button class="close" id="closeBtn" type="button">閉じる</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var defs = [
+    {key:"who", label:"① 〇〇は（誰・何）"},
+    {key:"place", label:"② 場所"},
+    {key:"with", label:"③ 〇〇と（誰・何と）"},
+    {key:"move", label:"④ 動き"},
+    {key:"end", label:"⑤ どうした・どうなった"}
+  ];
+
+  var STORAGE = "kotoba-gacha-v5";
+  var words = {};
+  var raw = null;
+
+  try {
+    raw = localStorage.getItem(STORAGE);
+    words = raw ? JSON.parse(raw) : {};
+  } catch(e) {
+    words = {};
+  }
+
+  for(var i=0;i<defs.length;i++){
+    if(!Array.isArray(words[defs[i].key])) words[defs[i].key] = [];
+  }
+
+  var scrollTimer = null;
+
+  function safeStore(){
+    try{
+      localStorage.setItem(STORAGE, JSON.stringify(words));
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  function updateCounts(){
+    for(var i=0;i<defs.length;i++){
+      var key = defs[i].key;
+      var el = document.getElementById("c-"+key);
+      if(el) el.textContent = "登録 " + words[key].length + " / 100";
+    }
+  }
+
+  function notice(msg){
+    var n = document.getElementById("notice");
+    n.textContent = msg;
+    n.style.display = "block";
+    window.clearTimeout(notice.timer);
+    notice.timer = window.setTimeout(function(){
+      n.style.display = "none";
+    }, 3200);
+  }
+
+  function blocked(text){
+    if(!demoModeOn) return false;
+
+    var patterns = [
+      /死ね|しね|殺す|ころす|殺害|ぶっ殺|自殺しろ/i,
+      /レイプ|強姦|輪姦|性器|ちんこ|まんこ|セックス|性交|フェラ|クンニ/i,
+      /キチガイ|気違い/i,
+      /首を切|刺し殺|撃ち殺|焼き殺|殴り殺/i,
+      /お前.*(バカ|馬鹿|アホ|死ね|消えろ|クズ)/i,
+      /あいつ.*(バカ|馬鹿|アホ|死ね|消えろ|クズ)/i
+    ];
+
+    for(var i=0;i<patterns.length;i++){
+      if(patterns[i].test(text)) return true;
+    }
+    return false;
+  }
+
+  window.addWord = function(key){
+    var input = document.getElementById("i-"+key);
+    if(!input) return;
+
+    var value = input.value.replace(/^\s+|\s+$/g,"");
+    if(!value) return;
+
+    if(words[key].length >= 100){
+      notice("この項目は100個までです");
+      return;
+    }
+
+    if(blocked(value)){
+      notice("📺 実演モードでは、その表現は登録できません");
+      return;
+    }
+
+    for(var i=0;i<words[key].length;i++){
+      if(words[key][i] === value){
+        notice("同じ言葉はすでに登録されています");
+        return;
+      }
+    }
+
+    words[key].push(value);
+    input.value = "";
+    safeStore();
+    updateCounts();
+    notice("✅ 登録しました");
+
+    /* V39: keep iPhone keyboard/cursor alive after registration */
+    try{ input.focus({preventScroll:true}); }catch(e){ input.focus(); }
+    try{ input.setSelectionRange(0,0); }catch(e){}
+
+    requestAnimationFrame(function(){
+      try{ input.focus({preventScroll:true}); }catch(e){ input.focus(); }
+      try{ input.setSelectionRange(0,0); }catch(e){}
+    });
+
+    window.setTimeout(function(){
+      try{ input.focus({preventScroll:true}); }catch(e){ input.focus(); }
+      try{ input.setSelectionRange(0,0); }catch(e){}
+    }, 60);
+  };
+
+  function makeCombinations(left, right, suffix){
+    var out = [];
+    for(var a=0; a<left.length; a++){
+      for(var b=0; b<right.length; b++){
+        out.push(left[a] + right[b] + (suffix || ""));
+      }
+    }
+    return out;
+  }
+
+  function appendUntil100(key, candidates){
+    var seen = {};
+    for(var i=0;i<words[key].length;i++) seen[words[key][i]] = true;
+    for(var j=0;j<candidates.length && words[key].length<100;j++){
+      var v = candidates[j];
+      if(!seen[v] && !blocked(v)){
+        words[key].push(v);
+        seen[v] = true;
+      }
+    }
+  }
+
+  window.autoFillWords = function(){
+    var adjectives = ["美しい","悲しい","偉そうな","優雅な","猛烈な","眠そうな","ピカピカの","謎の","巨大な","ちいさな"];
+    var nouns = ["うんこ","プリン","冷蔵庫","おじさん","ネコ","大根","社長","宇宙人","納豆","靴下"];
+    var placesA = ["お寺","コンビニ","月面","銭湯","札幌駅","公園","屋上","台所","動物園","押し入れ"];
+    var placesB = ["で","の前で","の裏で","の真ん中で","のすみっこで","の屋根で","の入口で","の地下で","のとなりで","の上で"];
+    var withAdj = ["泣いている","笑っている","怒った","踊る","眠い","まじめな","派手な","無口な","やさしい","怪しい"];
+    var withNouns = ["ゴリラ","和尚さん","赤ちゃん","カメラマン","宇宙人","おばあちゃん","ペンギン","サラリーマン","忍者","犬"];
+    var moveAdv = ["突然","静かに","全力で","こっそり","華麗に","なぜか","必死に","ゆっくり","ぐるぐる","堂々と"];
+    var moves = ["踊って","歌って","転んで","走って","笑って","隠れて","叫んで","回って","飛び跳ねて","拍手して"];
+    var endAdv = ["そのまま","なぜか","最後には","急に","結局","うっかり","見事に","静かに","全員で","何事もなく"];
+    var endings = ["逃げた","寝た","拍手された","泣いた","消えた","笑われた","固まった","帰った","転んだ","仲良くなった"];
+
+    appendUntil100("who", makeCombinations(adjectives,nouns,"は"));
+    appendUntil100("place", makeCombinations(placesA,placesB,""));
+    appendUntil100("with", makeCombinations(withAdj,withNouns,"と"));
+    appendUntil100("move", makeCombinations(moveAdv,moves,""));
+    appendUntil100("end", makeCombinations(endAdv,endings,""));
+
+    safeStore();
+    updateCounts();
+    notice("🤖 自動入力しました。5項目を100語まで補充しました");
+  };
+
+  window.manualSave = function(){
+    if(safeStore()) notice("💾 記憶しました");
+    else notice("保存できませんでした");
+  };
+
+  function randomPick(arr){
+    return arr[Math.floor(Math.random()*arr.length)];
+  }
+
+  function startMarquee(el, ticker){
+    if(scrollTimer){
+      window.clearInterval(scrollTimer);
+      scrollTimer = null;
+    }
+
+    el.style.transition = "none";
+    el.style.transform = "translateX(0px)";
+
+    var distance = el.scrollWidth - ticker.clientWidth + 8;
+    if(distance <= 8) return;
+
+    var x = 0;
+    var pause = 35;
+    var paused = 0;
+
+    scrollTimer = window.setInterval(function(){
+      if(paused < 28){
+        paused++;
+        return;
+      }
+
+      x -= 1;
+
+      if(x <= -distance){
+        x = 0;
+        paused = 0;
+      }
+
+      el.style.transform = "translateX("+x+"px)";
+    }, pause);
+  }
+
+  window.doGacha = function(){
+    for(var i=0;i<defs.length;i++){
+      if(words[defs[i].key].length === 0){
+        notice("5つの項目すべてに、1個以上登録してください");
+        return;
+      }
+    }
+
+    var parts = [];
+    for(var j=0;j<defs.length;j++){
+      parts.push(randomPick(words[defs[j].key]));
+    }
+    var result = parts.join(" ");
+
+    var el = document.getElementById("resultText");
+    var ticker = document.getElementById("ticker");
+
+    if(scrollTimer){
+      window.clearInterval(scrollTimer);
+      scrollTimer = null;
+    }
+
+    el.className = "resultText";
+    el.style.transform = "translateX(0px)";
+    el.textContent = result;
+
+    void el.offsetWidth;
+    el.className = "resultText show";
+
+    window.setTimeout(function(){
+      el.className = "resultText";
+      el.style.opacity = "1";
+      el.style.filter = "none";
+      startMarquee(el,ticker);
+
+      var speechToggle = document.getElementById("speechToggle");
+      if(speechToggle && speechToggle.checked && "speechSynthesis" in window){
+        try{
+          window.speechSynthesis.cancel();
+          var u = new SpeechSynthesisUtterance(result);
+          u.lang = "ja-JP";
+          u.rate = 0.95;
+          window.speechSynthesis.speak(u);
+        }catch(e){}
+      }
+    },2050);
+  };
+
+  function deleteWord(key,index,onlyKey){
+    words[key].splice(index,1);
+    safeStore();
+    updateCounts();
+    window.showList(onlyKey);
+  }
+
+  window.showList = function(onlyKey){
+    var box = document.getElementById("wordList");
+    var title = document.getElementById("modalTitle");
+    box.innerHTML = "";
+    title.textContent = onlyKey ? "登録した言葉を確認" : "登録した言葉";
+
+    for(var i=0;i<defs.length;i++){
+      var d = defs[i];
+      if(onlyKey && d.key !== onlyKey) continue;
+
+      var group = document.createElement("div");
+      group.className = "wordGroup";
+
+      var h = document.createElement("b");
+      h.textContent = d.label + "　" + words[d.key].length + " / 100";
+      group.appendChild(h);
+
+      if(words[d.key].length === 0){
+        var p = document.createElement("div");
+        p.textContent = "（まだありません）";
+        p.style.color = "#888";
+        p.style.padding = "10px 0";
+        group.appendChild(p);
+      }else{
+        for(var j=0;j<words[d.key].length;j++){
+          (function(key,index,text,filterKey){
+            var row = document.createElement("div");
+            row.className = "word";
+
+            var span = document.createElement("span");
+            span.textContent = text;
+
+            var btn = document.createElement("button");
+            btn.className = "del";
+            btn.textContent = "削除";
+            btn.onclick = function(){
+              deleteWord(key,index,filterKey);
+            };
+
+            row.appendChild(span);
+            row.appendChild(btn);
+            group.appendChild(row);
+          })(d.key,j,words[d.key][j],onlyKey);
+        }
+      }
+
+      box.appendChild(group);
+    }
+
+    document.getElementById("modal").style.display = "flex";
+  };
+
+  window.closeModal = function(){
+    document.getElementById("modal").style.display = "none";
+  };
+
+  window.modalBackground = function(e){
+    if(e.target && e.target.id === "modal") closeModal();
+  };
+
+  // V39: iPhone-safe registration. Keep focus in the same input.
+  var forms = document.querySelectorAll(".wordForm");
+  for(var f=0; f<forms.length; f++){
+    (function(form){
+      var key = form.getAttribute("data-key");
+      var input = form.querySelector("input");
+      var addBtn = form.querySelector(".add");
+      var touchHandled = false;
+
+      // Return/Enter registers without submitting the form.
+      input.addEventListener("keydown", function(e){
+        if(e.key === "Enter" || e.keyCode === 13){
+          e.preventDefault();
+          addWord(key);
+        }
+      });
+
+      // iPhone: prevent the tap itself from moving focus away from the input.
+      addBtn.addEventListener("touchstart", function(e){
+        e.preventDefault();
+        touchHandled = true;
+        try{ input.focus({preventScroll:true}); }catch(err){ input.focus(); }
+        addWord(key);
+        window.setTimeout(function(){ touchHandled = false; }, 350);
+      }, {passive:false});
+
+      // Mouse/trackpad/Desktop fallback.
+      addBtn.addEventListener("mousedown", function(e){
+        e.preventDefault();
+      });
+
+      addBtn.addEventListener("click", function(e){
+        e.preventDefault();
+        if(touchHandled) return;
+        try{ input.focus({preventScroll:true}); }catch(err){ input.focus(); }
+        addWord(key);
+      });
+
+      // Safety fallback only.
+      form.addEventListener("submit", function(e){
+        e.preventDefault();
+        addWord(key);
+      });
+    })(forms[f]);
+  }
+
+  var checks = document.querySelectorAll("[data-check]");
+  for(var c=0; c<checks.length; c++){
+    checks[c].addEventListener("click", function(){
+      showList(this.getAttribute("data-check"));
+    });
+  }
+
+  document.getElementById("autoFillBtn").addEventListener("click", autoFillWords);
+  document.getElementById("gachaBtn").addEventListener("click", doGacha);
+  document.getElementById("saveBtn").addEventListener("click", manualSave);
+  document.getElementById("listBtn").addEventListener("click", function(){ showList(); });
+  document.getElementById("closeBtn").addEventListener("click", closeModal);
+  document.getElementById("modal").addEventListener("click", function(e){
+    if(e.target === this) closeModal();
+  });
+
+  var demoModeOn = true;
+  var demoToggleBtn = document.getElementById("demoToggleBtn");
+  var demoStateText = document.getElementById("demoStateText");
+  var demoKnob = document.getElementById("demoKnob");
+
+  function paintDemoMode(){
+    demoStateText.textContent = demoModeOn ? "ON" : "OFF";
+    demoToggleBtn.setAttribute("aria-pressed", demoModeOn ? "true" : "false");
+    if(demoModeOn){
+      demoToggleBtn.classList.add("is-on");
+      demoToggleBtn.classList.remove("is-off");
+    }else{
+      demoToggleBtn.classList.add("is-off");
+      demoToggleBtn.classList.remove("is-on");
+    }
+  }
+
+  demoToggleBtn.addEventListener("click", function(){
+    demoModeOn = !demoModeOn;
+    paintDemoMode();
+  });
+
+  paintDemoMode();
+  document.getElementById("speechToggle").checked = false;
+  updateCounts();
+})();
+</script>
+
+
+
+<script>
+/* V40: after closing/finishing 確認, restore blinking cursor to that category input */
+(function(){
+  var lastConfirmInput = null;
+
+  document.addEventListener("touchstart", function(e){
+    var btn = e.target.closest && e.target.closest(".check, .confirm, .confirmBtn");
+    if(!btn) return;
+    var form = btn.closest(".wordForm");
+    if(form) lastConfirmInput = form.querySelector("input");
+  }, {passive:true});
+
+  document.addEventListener("click", function(e){
+    var btn = e.target.closest && e.target.closest(".check, .confirm, .confirmBtn");
+    if(btn){
+      var form = btn.closest(".wordForm");
+      if(form) lastConfirmInput = form.querySelector("input");
+    }
+
+    /* Any close/OK/back action inside the registered-word confirmation UI */
+    var closeBtn = e.target.closest && e.target.closest(
+      ".modal button, .dialog button, .sheet button, #modal button, #dialog button, [data-close]"
+    );
+    if(closeBtn && lastConfirmInput){
+      var inp = lastConfirmInput;
+      setTimeout(function(){
+        try{ inp.focus({preventScroll:true}); }catch(err){ inp.focus(); }
+        try{
+          var p = inp.value.length;
+          inp.setSelectionRange(p,p);
+        }catch(err){}
+      }, 80);
+    }
+  });
+
+  /* Also restore when a dialog/modal becomes hidden after confirmation. */
+  var observer = new MutationObserver(function(){
+    if(!lastConfirmInput) return;
+    setTimeout(function(){
+      var active = document.activeElement;
+      if(active === document.body || !active || active.tagName === "BUTTON"){
+        try{ lastConfirmInput.focus({preventScroll:true}); }catch(err){ lastConfirmInput.focus(); }
+        try{
+          var p = lastConfirmInput.value.length;
+          lastConfirmInput.setSelectionRange(p,p);
+        }catch(err){}
+      }
+    }, 100);
+  });
+  observer.observe(document.body,{subtree:true,attributes:true,attributeFilter:["class","style","hidden"]});
+})();
+</script>
+
+</body>
+</html>
