@@ -535,7 +535,7 @@ h1{
   <div id="notice" class="notice"></div>
 
   <div class="card" id="card-who">
-    <div class="rowhead"><b>① 〇〇は（誰・何）</b><span id="c-who" class="count">登録 0 / 100</span></div>
+    <div class="rowhead"><b>① 〇〇は（誰・何）</b><span id="c-who" class="count">登録 0 / 50</span></div>
     <form class="entry wordForm" data-key="who">
       <input id="i-who" type="text" maxlength="60" enterkeyhint="done" placeholder="例：チャッピーは">
       <button class="add" type="button">＋登録</button>
@@ -544,7 +544,7 @@ h1{
   </div>
 
   <div class="card" id="card-place">
-    <div class="rowhead"><b>② 場所</b><span id="c-place" class="count">登録 0 / 100</span></div>
+    <div class="rowhead"><b>② 場所</b><span id="c-place" class="count">登録 0 / 50</span></div>
     <form class="entry wordForm" data-key="place">
       <input id="i-place" type="text" maxlength="60" enterkeyhint="done" placeholder="例：お寺で">
       <button class="add" type="button">＋登録</button>
@@ -553,7 +553,7 @@ h1{
   </div>
 
   <div class="card" id="card-with">
-    <div class="rowhead"><b>③ 〇〇と（誰・何と）</b><span id="c-with" class="count">登録 0 / 100</span></div>
+    <div class="rowhead"><b>③ 〇〇と（誰・何と）</b><span id="c-with" class="count">登録 0 / 50</span></div>
     <form class="entry wordForm" data-key="with">
       <input id="i-with" type="text" maxlength="60" enterkeyhint="done" placeholder="例：おじさんと">
       <button class="add" type="button">＋登録</button>
@@ -562,7 +562,7 @@ h1{
   </div>
 
   <div class="card" id="card-move">
-    <div class="rowhead"><b>④ 動き</b><span id="c-move" class="count">登録 0 / 100</span></div>
+    <div class="rowhead"><b>④ 動き</b><span id="c-move" class="count">登録 0 / 50</span></div>
     <form class="entry wordForm" data-key="move">
       <input id="i-move" type="text" maxlength="60" enterkeyhint="done" placeholder="例：踊って">
       <button class="add" type="button">＋登録</button>
@@ -571,7 +571,7 @@ h1{
   </div>
 
   <div class="card" id="card-end">
-    <div class="rowhead"><b>⑤ どうした・どうなった</b><span id="c-end" class="count">登録 0 / 100</span></div>
+    <div class="rowhead"><b>⑤ どうした・どうなった</b><span id="c-end" class="count">登録 0 / 50</span></div>
     <form class="entry wordForm" data-key="end">
       <input id="i-end" type="text" maxlength="60" enterkeyhint="done" placeholder="例：逃げた">
       <button class="add" type="button">＋登録</button>
@@ -579,7 +579,7 @@ h1{
     </form>
   </div>
 
-  <button class="autoFill" id="autoFillBtn" type="button">🤖 自動入力（各100語）</button>
+  <button class="autoFill" id="autoFillBtn" type="button">🤖 自動入力（各50語）</button>
 
   <button class="gacha" id="gachaBtn" type="button">🎰 ガチャ！</button>
 
@@ -603,7 +603,7 @@ h1{
     <button class="tool" id="listBtn" type="button">📋 一覧</button>
   </div>
 
-  <div class="help">各項目100個まで保存できます。自動入力は不足分だけ補充します。放送モードは毎回ONで始まります。</div>
+  <div class="help">各項目50個まで、合計250語。自動入力は不足分だけ補充します。放送モードは毎回ONで始まります。</div>
   <div class="footer">くだらないのは、あなたの<span class="sparkleResponsibility">責任</span>です。</div>
 </div>
 
@@ -625,7 +625,7 @@ h1{
     {key:"end", label:"⑤ どうした・どうなった"}
   ];
 
-  var STORAGE = "kotoba-gacha-v5";
+  var STORAGE = "kotoba-gacha-v6";
   var words = {};
   var raw = null;
 
@@ -655,7 +655,7 @@ h1{
     for(var i=0;i<defs.length;i++){
       var key = defs[i].key;
       var el = document.getElementById("c-"+key);
-      if(el) el.textContent = "登録 " + words[key].length + " / 100";
+      if(el) el.textContent = "登録 " + words[key].length + " / 50";
     }
   }
 
@@ -694,8 +694,8 @@ h1{
     var value = input.value.replace(/^\s+|\s+$/g,"");
     if(!value) return;
 
-    if(words[key].length >= 100){
-      notice("この項目は100個までです");
+    if(words[key].length >= 50){
+      notice("この項目は50個までです");
       return;
     }
 
@@ -732,20 +732,10 @@ h1{
     }, 60);
   };
 
-  function makeCombinations(left, right, suffix){
-    var out = [];
-    for(var a=0; a<left.length; a++){
-      for(var b=0; b<right.length; b++){
-        out.push(left[a] + right[b] + (suffix || ""));
-      }
-    }
-    return out;
-  }
-
-  function appendUntil100(key, candidates){
+  function appendUntil50(key, candidates){
     var seen = {};
     for(var i=0;i<words[key].length;i++) seen[words[key][i]] = true;
-    for(var j=0;j<candidates.length && words[key].length<100;j++){
+    for(var j=0;j<candidates.length && words[key].length<50;j++){
       var v = candidates[j];
       if(!seen[v] && !blocked(v)){
         words[key].push(v);
@@ -755,26 +745,81 @@ h1{
   }
 
   window.autoFillWords = function(){
-    var adjectives = ["美しい","悲しい","偉そうな","優雅な","猛烈な","眠そうな","ピカピカの","謎の","巨大な","ちいさな"];
-    var nouns = ["うんこ","プリン","冷蔵庫","おじさん","ネコ","大根","社長","宇宙人","納豆","靴下"];
-    var placesA = ["お寺","コンビニ","月面","銭湯","札幌駅","公園","屋上","台所","動物園","押し入れ"];
-    var placesB = ["で","の前で","の裏で","の真ん中で","のすみっこで","の屋根で","の入口で","の地下で","のとなりで","の上で"];
-    var withAdj = ["泣いている","笑っている","怒った","踊る","眠い","まじめな","派手な","無口な","やさしい","怪しい"];
-    var withNouns = ["ゴリラ","和尚さん","赤ちゃん","カメラマン","宇宙人","おばあちゃん","ペンギン","サラリーマン","忍者","犬"];
-    var moveAdv = ["突然","静かに","全力で","こっそり","華麗に","なぜか","必死に","ゆっくり","ぐるぐる","堂々と"];
-    var moves = ["踊って","歌って","転んで","走って","笑って","隠れて","叫んで","回って","飛び跳ねて","拍手して"];
-    var endAdv = ["そのまま","なぜか","最後には","急に","結局","うっかり","見事に","静かに","全員で","何事もなく"];
-    var endings = ["逃げた","寝た","拍手された","泣いた","消えた","笑われた","固まった","帰った","転んだ","仲良くなった"];
+    /* V42: simple words first; a few deliberate contradictions/old+new slang for accidents */
+    var who = [
+      "ばあさんは","じいさんは","おっさんは","兄ちゃんは","姉ちゃんは",
+      "社長は","店長は","先生は","和尚さんは","カメラマンは",
+      "酔っぱらいは","寝起きの人は","隣のおやじは","近所のばあさんは","知らないおっさんは",
+      "ネコは","犬は","ゴリラは","ペンギンは","宇宙人は",
+      "使った雑巾は","湿った靴下は","伸びきったパンツは","曲がった歯ブラシは","錆びた自転車は",
+      "ぬるい牛乳は","昨日の弁当は","半額のコロッケは","しなびた大根は","空っぽの一升瓶は",
+      "金の玉は","冷蔵庫は","炊飯器は","掃除機は","便座は",
+      "ナウいばあさんは","イカすじいさんは","ハイカラなおっさんは","モーレツな社長は","ガチな和尚さんは",
+      "ブサイクな美人は","無口なおしゃべりは","貧乏な大富豪は","真面目な変人は","小さな巨人は",
+      "陽キャなじいさんは","陰キャな社長は","ビジュのいいおっさんは","詰んだ店長は","謎のばあさんは"
+    ];
 
-    appendUntil100("who", makeCombinations(adjectives,nouns,"は"));
-    appendUntil100("place", makeCombinations(placesA,placesB,""));
-    appendUntil100("with", makeCombinations(withAdj,withNouns,"と"));
-    appendUntil100("move", makeCombinations(moveAdv,moves,""));
-    appendUntil100("end", makeCombinations(endAdv,endings,""));
+    var place = [
+      "垢の浮いた風呂で","トイレで","銭湯で","台所で","押し入れで",
+      "玄関で","物置で","ゴミ置き場で","公園で","駅前で",
+      "札幌駅で","コンビニで","スーパーで","居酒屋で","食堂で",
+      "病院の待合室で","学校の廊下で","職員室で","会社の給湯室で","会議室で",
+      "エレベーターの中で","階段の途中で","屋上で","地下室で","駐車場で",
+      "バス停で","自転車置き場で","横断歩道で","公衆電話の前で","自販機の横で",
+      "月面で","宇宙船の中で","無人島で","洞窟で","山のてっぺんで",
+      "海岸で","川べりで","雪山で","畑の真ん中で","田んぼで",
+      "布団の中で","風呂場のすみで","冷蔵庫の前で","便所の前で","ゴミ箱の横で",
+      "誰もいない部屋で","閉店後の店で","真夜中の公園で","雨漏りする部屋で","昭和っぽい喫茶店で"
+    ];
+
+    var withWords = [
+      "ばあさんと","じいさんと","おっさんと","兄ちゃんと","姉ちゃんと",
+      "社長と","店長と","先生と","和尚さんと","カメラマンと",
+      "酔っぱらいと","知らない人と","隣のおやじと","近所のばあさんと","寝ぼけた人と",
+      "ネコと","犬と","ゴリラと","ペンギンと","宇宙人と",
+      "使った雑巾と","湿った靴下と","しなびた大根と","半額の弁当と","金の玉と",
+      "冷蔵庫と","炊飯器と","掃除機と","便座と","錆びた自転車と",
+      "ナウいばあさんと","イカすじいさんと","ハイカラなおっさんと","陽キャと","陰キャと",
+      "ブサイクな美人と","無口なおしゃべりと","貧乏な大富豪と","真面目な変人と","小さな巨人と",
+      "ガチ勢と","推しと","同じ界隈の人と","ビジュのいい人と","詰んだ人と",
+      "泣いている店長と","怒った社長と","眠そうな先生と","怪しい和尚さんと","派手なばあさんと"
+    ];
+
+    var move = [
+      "踊って","歌って","転んで","走って","叫んで",
+      "笑って","泣いて","寝転んで","飛び跳ねて","拍手して",
+      "土下座して","正座して","逆立ちして","居眠りして","立ち尽くして",
+      "逃げ回って","追いかけて","隠れて","のぞいて","手を振って",
+      "雑巾がけして","皿を洗って","風呂を洗って","歯を磨いて","靴下を脱いで",
+      "弁当を食べて","牛乳を飲んで","コロッケを握って","大根を抱えて","金の玉を転がして",
+      "ガチで踊って","ワンチャン狙って","それなと言って","草と言って","無理と言って",
+      "ナウく歩いて","イカして決めて","モーレツに走って","こっそり笑って","堂々と転んで",
+      "全力で逃げて","ゆっくり回って","突然止まって","何度も謝って","意味なく拍手して",
+      "スマホを見て","写真を撮って","自撮りして","ぼーっとして","何事もなく座って"
+    ];
+
+    var ending = [
+      "寝た","逃げた","帰った","転んだ","泣いた",
+      "笑われた","怒られた","拍手された","無視された","固まった",
+      "迷子になった","びしょ濡れになった","泥だらけになった","腹が減った","眠くなった",
+      "靴下をなくした","財布を忘れた","鍵をなくした","弁当を落とした","牛乳をこぼした",
+      "風呂に入った","風呂から出た","トイレに駆け込んだ","その場に座った","布団に戻った",
+      "ガチで詰んだ","ワンチャン成功した","それなで終わった","草が生えた","界隈で話題になった",
+      "ナウく決まった","イカした顔になった","モーレツに疲れた","昭和に戻った","急に静かになった",
+      "なぜか仲良くなった","なぜか謝った","なぜか褒められた","なぜか逃げられた","なぜか人気者になった",
+      "何事もなかった","誰にも気づかれなかった","全員帰った","店が閉まった","朝になった",
+      "もうどうでもよくなった","ちょっと反省した","またやった","知らん顔をした","そのまま寝た"
+    ];
+
+    appendUntil50("who", who);
+    appendUntil50("place", place);
+    appendUntil50("with", withWords);
+    appendUntil50("move", move);
+    appendUntil50("end", ending);
 
     safeStore();
     updateCounts();
-    notice("🤖 自動入力しました。5項目を100語まで補充しました");
+    notice("🤖 自動入力しました。5項目×50語＝250語です");
   };
 
   window.manualSave = function(){
@@ -799,16 +844,16 @@ h1{
     if(distance <= 8) return;
 
     var x = 0;
-    var pause = 35;
+    var pause = 18;
     var paused = 0;
 
     scrollTimer = window.setInterval(function(){
-      if(paused < 28){
+      if(paused < 8){
         paused++;
         return;
       }
 
-      x -= 1;
+      x -= 2;
 
       if(x <= -distance){
         x = 0;
@@ -817,6 +862,41 @@ h1{
 
       el.style.transform = "translateX("+x+"px)";
     }, pause);
+  }
+
+  var preferredJaVoice = null;
+
+  function refreshJapaneseVoice(){
+    if(!("speechSynthesis" in window)) return;
+    var voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+    preferredJaVoice = null;
+    for(var i=0;i<voices.length;i++){
+      var lang = (voices[i].lang || "").toLowerCase();
+      if(lang.indexOf("ja") === 0){
+        preferredJaVoice = voices[i];
+        if(/kyoko|otoya|hattori|japanese/i.test(voices[i].name || "")) break;
+      }
+    }
+  }
+
+  function speakJapanese(text){
+    if(!("speechSynthesis" in window)) return;
+    try{
+      refreshJapaneseVoice();
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = "ja-JP";
+      u.rate = 1.18;
+      u.pitch = 0.88;
+      if(preferredJaVoice) u.voice = preferredJaVoice;
+      window.speechSynthesis.resume();
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+
+  if("speechSynthesis" in window){
+    refreshJapaneseVoice();
+    try{ window.speechSynthesis.addEventListener("voiceschanged", refreshJapaneseVoice); }catch(e){}
   }
 
   window.doGacha = function(){
@@ -855,14 +935,8 @@ h1{
       startMarquee(el,ticker);
 
       var speechToggle = document.getElementById("speechToggle");
-      if(speechToggle && speechToggle.checked && "speechSynthesis" in window){
-        try{
-          window.speechSynthesis.cancel();
-          var u = new SpeechSynthesisUtterance(result);
-          u.lang = "ja-JP";
-          u.rate = 0.95;
-          window.speechSynthesis.speak(u);
-        }catch(e){}
+      if(speechToggle && speechToggle.checked){
+        speakJapanese(result);
       }
     },2050);
   };
@@ -888,7 +962,7 @@ h1{
       group.className = "wordGroup";
 
       var h = document.createElement("b");
-      h.textContent = d.label + "　" + words[d.key].length + " / 100";
+      h.textContent = d.label + "　" + words[d.key].length + " / 50";
       group.appendChild(h);
 
       if(words[d.key].length === 0){
@@ -1019,7 +1093,23 @@ h1{
   });
 
   paintDemoMode();
-  document.getElementById("speechToggle").checked = false;
+  var speechToggleEl = document.getElementById("speechToggle");
+  speechToggleEl.checked = false;
+  speechToggleEl.addEventListener("change", function(){
+    if(this.checked && "speechSynthesis" in window){
+      try{
+        refreshJapaneseVoice();
+        window.speechSynthesis.cancel();
+        var unlock = new SpeechSynthesisUtterance(" ");
+        unlock.lang = "ja-JP";
+        unlock.volume = 0.01;
+        if(preferredJaVoice) unlock.voice = preferredJaVoice;
+        window.speechSynthesis.speak(unlock);
+      }catch(e){}
+    }else if("speechSynthesis" in window){
+      try{ window.speechSynthesis.cancel(); }catch(e){}
+    }
+  });
   updateCounts();
 })();
 </script>
