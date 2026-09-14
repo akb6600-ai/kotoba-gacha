@@ -1560,8 +1560,8 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
 
     var x = 0;
     var pause = 18;
-    var paused = 0;
     var pauseTicks = Math.ceil(2000 / pause); // 約2秒停止
+    var paused = pauseTicks; // 最初は待たず、スクロール終了後だけ2秒停止
 
     scrollTimer = window.setInterval(function(){
       if(paused < pauseTicks){
