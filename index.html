@@ -1570,10 +1570,15 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     // 読み上げ速度はスクロール時間に合わせて調整する。
     var scrollSeconds = (distance / 2) * (pause / 1000);
     if(announce){
-      speakJapanese(resultText, scrollSeconds);
+      // iPhone実機で音声開始が約0.1〜0.2秒遅れるため、150msだけ先に発声指示する。
+      window.setTimeout(function(){
+        speakJapanese(resultText, scrollSeconds);
+      },0);
     }
 
-    scrollTimer = window.setInterval(function(){
+    // 音声合成の立ち上がり分だけテロップ開始を150ms待って同期させる。
+    window.setTimeout(function(){
+      scrollTimer = window.setInterval(function(){
       if(paused < pauseTicks){
         paused++;
         return;
@@ -1586,8 +1591,9 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
         paused = 0;
       }
 
-      el.style.transform = "translateX("+x+"px)";
-    }, pause);
+        el.style.transform = "translateX("+x+"px)";
+      }, pause);
+    },150);
   }
 
   var preferredJaVoice = null;
@@ -1631,9 +1637,10 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       var rate = 1.02;
       if(targetSeconds && targetSeconds > 0){
         var chars = text.replace(/\s+/g,"").length;
-        var estimatedSecondsAtNormalRate = Math.max(1.6, chars / 5.2);
+        var estimatedSecondsAtNormalRate = Math.max(2.0, chars / 4.2);
         rate = estimatedSecondsAtNormalRate / targetSeconds;
-        rate = Math.max(0.55, Math.min(1.45, rate));
+        // 言語郎らしく、早口にならない範囲に制限。
+        rate = Math.max(0.55, Math.min(0.92, rate));
       }
 
       u.rate = rate;
