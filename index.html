@@ -1653,12 +1653,12 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       u.pitch = 1.00;
       if(preferredJaVoice) u.voice = preferredJaVoice;
       if(onActualStart){
-        // 実機ではテロップに対して声が約1.6秒遅れて聞こえたため、
-        // 音声開始イベント後もテロップを約1.6秒待たせて耳での開始位置を合わせる。
+        // 実機調整：v124でも声が約0.8〜0.9秒遅く感じたため、
+        // テロップ開始をさらに0.85秒遅らせ、合計約2.45秒待たせる。
         u.onstart = function(){
           window.setTimeout(function(){
             onActualStart();
-          },1600);
+          },2450);
         };
       }
       window.speechSynthesis.resume();
