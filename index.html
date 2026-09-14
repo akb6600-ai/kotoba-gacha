@@ -1565,35 +1565,38 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     var pause = 18;
     var pauseTicks = Math.ceil(2000 / pause); // 終了後は約2秒停止
     var paused = pauseTicks; // 最初は待たない
+    var started = false;
 
-    // テロップとナレーションを同時に開始。
-    // 読み上げ速度はスクロール時間に合わせて調整する。
-    var scrollSeconds = (distance / 2) * (pause / 1000);
-    if(announce){
-      // iPhone実機で音声開始が約0.1〜0.2秒遅れるため、150msだけ先に発声指示する。
-      window.setTimeout(function(){
-        speakJapanese(resultText, scrollSeconds);
-      },0);
-    }
-
-    // 音声合成の立ち上がり分だけテロップ開始を150ms待って同期させる。
-    window.setTimeout(function(){
+    function beginScroll(){
+      if(started) return;
+      started = true;
       scrollTimer = window.setInterval(function(){
-      if(paused < pauseTicks){
-        paused++;
-        return;
-      }
+        if(paused < pauseTicks){
+          paused++;
+          return;
+        }
 
-      x -= 2;
+        x -= 2;
 
-      if(x <= -distance){
-        x = 0;
-        paused = 0;
-      }
+        if(x <= -distance){
+          x = 0;
+          paused = 0;
+        }
 
         el.style.transform = "translateX("+x+"px)";
       }, pause);
-    },150);
+    }
+
+    // 読み上げの「実際の開始」を合図にテロップを開始する。
+    var scrollSeconds = (distance / 2) * (pause / 1000);
+    if(announce){
+      speakJapanese(resultText, scrollSeconds, beginScroll);
+
+      // 万一iPhone側でonstartが返らない時だけ保険で開始。
+      window.setTimeout(beginScroll, 800);
+    }else{
+      beginScroll();
+    }
   }
 
   var preferredJaVoice = null;
@@ -1624,8 +1627,11 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     }
   }
 
-  function speakJapanese(text, targetSeconds){
-    if(!("speechSynthesis" in window)) return;
+  function speakJapanese(text, targetSeconds, onActualStart){
+    if(!("speechSynthesis" in window)){
+      if(onActualStart) onActualStart();
+      return;
+    }
     try{
       refreshJapaneseVoice();
       window.speechSynthesis.cancel();
@@ -1646,9 +1652,14 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       u.rate = rate;
       u.pitch = 1.00;
       if(preferredJaVoice) u.voice = preferredJaVoice;
+      if(onActualStart){
+        u.onstart = function(){ onActualStart(); };
+      }
       window.speechSynthesis.resume();
       window.speechSynthesis.speak(u);
-    }catch(e){}
+    }catch(e){
+      if(onActualStart) onActualStart();
+    }
   }
 
   if("speechSynthesis" in window){
