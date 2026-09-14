@@ -1722,7 +1722,11 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     // v130実機調整：v129でアナウンスが約3秒遅く聞こえたため、
     // ガチャ結果を出した直後に音声合成を起動して、実際の発声をテロップ開始へ近づける。
     if(announceResult){
-      speakJapanese(result);
+      // v132実機調整：終点は合っているので速度は触らず、
+      // アナウンスの開始だけ1.5秒遅らせる。
+      window.setTimeout(function(){
+        speakJapanese(result);
+      },1500);
     }
 
     window.setTimeout(function(){
