@@ -1546,7 +1546,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     return arr[Math.floor(Math.random()*arr.length)];
   }
 
-  function startMarquee(el, ticker){
+  function startMarquee(el, ticker, resultText, announce){
     if(scrollTimer){
       window.clearInterval(scrollTimer);
       scrollTimer = null;
@@ -1556,12 +1556,22 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     el.style.transform = "translateX(0px)";
 
     var distance = el.scrollWidth - ticker.clientWidth + 8;
-    if(distance <= 8) return;
+    if(distance <= 8){
+      if(announce) speakJapanese(resultText);
+      return;
+    }
 
     var x = 0;
     var pause = 18;
-    var pauseTicks = Math.ceil(2000 / pause); // 約2秒停止
-    var paused = pauseTicks; // 最初は待たず、スクロール終了後だけ2秒停止
+    var pauseTicks = Math.ceil(2000 / pause); // 終了後は約2秒停止
+    var paused = pauseTicks; // 最初は待たない
+
+    // テロップとナレーションを同時に開始。
+    // 読み上げ速度はスクロール時間に合わせて調整する。
+    var scrollSeconds = (distance / 2) * (pause / 1000);
+    if(announce){
+      speakJapanese(resultText, scrollSeconds);
+    }
 
     scrollTimer = window.setInterval(function(){
       if(paused < pauseTicks){
@@ -1586,23 +1596,47 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     if(!("speechSynthesis" in window)) return;
     var voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
     preferredJaVoice = null;
+
+    // 日本語の男性音声を優先。iPhoneでは Otoya を最優先。
+    var malePatterns = /otoya|ichiro|takumi|male/i;
     for(var i=0;i<voices.length;i++){
       var lang = (voices[i].lang || "").toLowerCase();
-      if(lang.indexOf("ja") === 0){
+      var name = voices[i].name || "";
+      if(lang.indexOf("ja") === 0 && malePatterns.test(name)){
         preferredJaVoice = voices[i];
-        if(/kyoko|otoya|hattori|japanese/i.test(voices[i].name || "")) break;
+        return;
+      }
+    }
+
+    // 男性名が見つからない場合は日本語音声へフォールバック。
+    for(var j=0;j<voices.length;j++){
+      var lang2 = (voices[j].lang || "").toLowerCase();
+      if(lang2.indexOf("ja") === 0){
+        preferredJaVoice = voices[j];
+        break;
       }
     }
   }
 
-  function speakJapanese(text){
+  function speakJapanese(text, targetSeconds){
     if(!("speechSynthesis" in window)) return;
     try{
       refreshJapaneseVoice();
       window.speechSynthesis.cancel();
       var u = new SpeechSynthesisUtterance(text);
       u.lang = "ja-JP";
-      u.rate = 1.02;
+
+      // 文章の長さから標準読み上げ時間を概算し、
+      // テロップのスクロール時間に近づくよう速度を調整する。
+      var rate = 1.02;
+      if(targetSeconds && targetSeconds > 0){
+        var chars = text.replace(/\s+/g,"").length;
+        var estimatedSecondsAtNormalRate = Math.max(1.6, chars / 5.2);
+        rate = estimatedSecondsAtNormalRate / targetSeconds;
+        rate = Math.max(0.55, Math.min(1.45, rate));
+      }
+
+      u.rate = rate;
       u.pitch = 1.00;
       if(preferredJaVoice) u.voice = preferredJaVoice;
       window.speechSynthesis.resume();
@@ -1643,13 +1677,8 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     }
     var result = parts.join(" ");
 
-    // 結果表示の約3秒後にアナウンスを開始する。
     var speechToggle = document.getElementById("speechToggle");
-    if(speechToggle && speechToggle.checked){
-      window.setTimeout(function(){
-        speakJapanese(result);
-      },3000);
-    }
+    var announceResult = !!(speechToggle && speechToggle.checked);
 
     var el = document.getElementById("resultText");
     var ticker = document.getElementById("ticker");
@@ -1672,13 +1701,14 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     void el.offsetWidth;
     el.className = "resultText show";
 
+    // 約3秒かけて結果を見せ、その後テロップとナレーションを同時開始。
     window.setTimeout(function(){
       el.className = "resultText";
       el.style.opacity = "1";
       el.style.filter = "none";
-      startMarquee(el,ticker);
+      startMarquee(el,ticker,result,announceResult);
 
-    },2050);
+    },3000);
   };
 
   function deleteWord(key,index,onlyKey){
