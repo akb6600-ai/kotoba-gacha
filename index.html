@@ -1653,12 +1653,12 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       u.pitch = 1.00;
       if(preferredJaVoice) u.voice = preferredJaVoice;
       if(onActualStart){
-        // iPhoneでは onstart より実際に耳へ聞こえる声が約0.2秒遅れることがあるため、
-        // テロップ開始を200msだけ待って合わせる。
+        // 実機ではテロップに対して声が約1.6秒遅れて聞こえたため、
+        // 音声開始イベント後もテロップを約1.6秒待たせて耳での開始位置を合わせる。
         u.onstart = function(){
           window.setTimeout(function(){
             onActualStart();
-          },200);
+          },1600);
         };
       }
       window.speechSynthesis.resume();
