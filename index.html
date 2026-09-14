@@ -1586,11 +1586,23 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     if(!("speechSynthesis" in window)) return;
     var voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
     preferredJaVoice = null;
+
+    // 男性の日本語音声を優先（iPhoneでは Otoya があれば最優先）
     for(var i=0;i<voices.length;i++){
       var lang = (voices[i].lang || "").toLowerCase();
-      if(lang.indexOf("ja") === 0){
+      var name = voices[i].name || "";
+      if(lang.indexOf("ja") === 0 && /otoya/i.test(name)){
         preferredJaVoice = voices[i];
-        if(/kyoko|otoya|hattori|japanese/i.test(voices[i].name || "")) break;
+        return;
+      }
+    }
+
+    // Otoya が無い端末では、利用できる日本語音声を使用
+    for(var j=0;j<voices.length;j++){
+      var lang2 = (voices[j].lang || "").toLowerCase();
+      if(lang2.indexOf("ja") === 0){
+        preferredJaVoice = voices[j];
+        break;
       }
     }
   }
@@ -1602,8 +1614,8 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       window.speechSynthesis.cancel();
       var u = new SpeechSynthesisUtterance(text);
       u.lang = "ja-JP";
-      u.rate = 1.02;
-      u.pitch = 1.00;
+      u.rate = 0.98;
+      u.pitch = 0.82;
       if(preferredJaVoice) u.voice = preferredJaVoice;
       window.speechSynthesis.resume();
       window.speechSynthesis.speak(u);
@@ -1643,11 +1655,13 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     }
     var result = parts.join(" ");
 
-    // iPhone Safariでは、ユーザーのタップ操作から時間が空くと
-    // 音声合成が開始されないことがあるため、ガチャのタップ直後に読み上げを開始する。
+    // iPhone Safari用の解除はタップ直後に済ませ、
+    // 本読み上げは結果表示から約2秒後に開始する。
     var speechToggle = document.getElementById("speechToggle");
     if(speechToggle && speechToggle.checked){
-      speakJapanese(result);
+      window.setTimeout(function(){
+        speakJapanese(result);
+      },2000);
     }
 
     var el = document.getElementById("resultText");
