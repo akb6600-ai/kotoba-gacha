@@ -1590,10 +1590,10 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     // 読み上げの「実際の開始」を合図にテロップを開始する。
     var scrollSeconds = (distance / 2) * (pause / 1000);
     if(announce){
-      speakJapanese(resultText, scrollSeconds, beginScroll);
-
-      // 万一iPhone側でonstartが返らない時だけ保険で開始。
-      window.setTimeout(beginScroll, 800);
+      // iPhoneでは speechSynthesis の onstart と実際に耳へ聞こえる開始が一致しないため、
+      // 実機で測った差に合わせ、発声指示から約1.8秒後にテロップを開始する。
+      speakJapanese(resultText, scrollSeconds);
+      window.setTimeout(beginScroll, 1800);
     }else{
       beginScroll();
     }
@@ -1653,13 +1653,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       u.pitch = 1.00;
       if(preferredJaVoice) u.voice = preferredJaVoice;
       if(onActualStart){
-        // 実機調整：v124でも声が約0.8〜0.9秒遅く感じたため、
-        // テロップ開始をさらに0.85秒遅らせ、合計約2.45秒待たせる。
-        u.onstart = function(){
-          window.setTimeout(function(){
-            onActualStart();
-          },2450);
-        };
+        u.onstart = function(){ onActualStart(); };
       }
       window.speechSynthesis.resume();
       window.speechSynthesis.speak(u);
