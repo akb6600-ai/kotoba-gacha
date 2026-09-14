@@ -1719,12 +1719,10 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     void el.offsetWidth;
     el.className = "resultText show";
 
-    // v129実機調整：v127を基準に、アナウンス開始だけ0.6秒早める。
-    // 先に音声合成を起動し、3秒後のテロップ開始へ耳での発声を近づける。
+    // v130実機調整：v129でアナウンスが約3秒遅く聞こえたため、
+    // ガチャ結果を出した直後に音声合成を起動して、実際の発声をテロップ開始へ近づける。
     if(announceResult){
-      window.setTimeout(function(){
-        speakJapanese(result);
-      },2400);
+      speakJapanese(result);
     }
 
     window.setTimeout(function(){
