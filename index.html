@@ -1592,10 +1592,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     if(announce){
       // 実機調整：v126ではアナウンスが約1秒遅く聞こえたため、
       // テロップ開始をさらに1秒待たせ、発声指示から約2.8秒後に開始する。
-      // v128実機調整：読み上げをさらに0.6秒遅らせる。
-      window.setTimeout(function(){
-        speakJapanese(resultText, scrollSeconds);
-      },600);
+      speakJapanese(resultText, scrollSeconds);
       window.setTimeout(beginScroll, 2800);
     }else{
       beginScroll();
@@ -1722,12 +1719,19 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     void el.offsetWidth;
     el.className = "resultText show";
 
-    // 約3秒かけて結果を見せ、その後テロップとナレーションを同時開始。
+    // v129実機調整：v127を基準に、アナウンス開始だけ0.6秒早める。
+    // 先に音声合成を起動し、3秒後のテロップ開始へ耳での発声を近づける。
+    if(announceResult){
+      window.setTimeout(function(){
+        speakJapanese(result);
+      },2400);
+    }
+
     window.setTimeout(function(){
       el.className = "resultText";
       el.style.opacity = "1";
       el.style.filter = "none";
-      startMarquee(el,ticker,result,announceResult);
+      startMarquee(el,ticker,result,false);
 
     },3000);
   };
