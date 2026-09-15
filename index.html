@@ -1593,7 +1593,9 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       // 実機調整：v126ではアナウンスが約1秒遅く聞こえたため、
       // テロップ開始をさらに1秒待たせ、発声指示から約2.8秒後に開始する。
       speakJapanese(resultText, scrollSeconds);
-      window.setTimeout(beginScroll, 2800);
+      window.setTimeout(beginScroll, 500);
+
+      
     }else{
       beginScroll();
     }
