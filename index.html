@@ -1472,7 +1472,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     }, 60);
   };
 
-  function >= 60(key, candidates){
+  function appendUntil50(key, candidates){
     var seen = {};
     for(var i=0;i<words[key].length;i++) seen[words[key][i]] = true;
     for(var j=0;j<candidates.length && words[key].length<25;j++){
@@ -1526,11 +1526,11 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       "トイレに駆け込んだ","その場に座った","なぜか仲良くなった","ちょっと反省した","そのまま寝た"
     ];
 
-    >= 60("who", who);
-    >= 60("place", place);
-    >= 60("with", withWords);
-    >= 60("move", move);
-    >= 60("end", ending);
+    appendUntil50("who", who);
+    appendUntil50("place", place);
+    appendUntil50("with", withWords);
+    appendUntil50("move", move);
+    appendUntil50("end", ending);
 
     safeStore();
     updateCounts();
