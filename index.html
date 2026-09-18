@@ -1274,7 +1274,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   <div id="notice" class="notice"></div>
 
   <div class="card" id="card-who">
-    <div class="rowhead"><b>① 〇〇は（誰・何）</b><span id="c-who" class="count">登録 0 / 50</span></div>
+    <div class="rowhead"><b>① 〇〇は（誰・何）</b><span id="c-who" class="count">登録 0 / 60</span></div>
     <form class="entry wordForm" data-key="who">
       <input id="i-who" type="text" maxlength="60" enterkeyhint="done" placeholder="例：チャッピーは">
       <button class="add" type="button">＋登録</button>
@@ -1283,7 +1283,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   </div>
 
   <div class="card" id="card-place">
-    <div class="rowhead"><b>② 場所</b><span id="c-place" class="count">登録 0 / 50</span></div>
+    <div class="rowhead"><b>② 場所</b><span id="c-place" class="count">登録 0 / 60</span></div>
     <form class="entry wordForm" data-key="place">
       <input id="i-place" type="text" maxlength="60" enterkeyhint="done" placeholder="例：お寺で">
       <button class="add" type="button">＋登録</button>
@@ -1292,7 +1292,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   </div>
 
   <div class="card" id="card-with">
-    <div class="rowhead"><b>③ 〇〇と（誰・何と）</b><span id="c-with" class="count">登録 0 / 50</span></div>
+    <div class="rowhead"><b>③ 〇〇と（誰・何と）</b><span id="c-with" class="count">登録 0 / 60</span></div>
     <form class="entry wordForm" data-key="with">
       <input id="i-with" type="text" maxlength="60" enterkeyhint="done" placeholder="例：おじさんと">
       <button class="add" type="button">＋登録</button>
@@ -1301,7 +1301,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   </div>
 
   <div class="card" id="card-move">
-    <div class="rowhead"><b>④ 動き</b><span id="c-move" class="count">登録 0 / 50</span></div>
+    <div class="rowhead"><b>④ 動き</b><span id="c-move" class="count">登録 0 / 60</span></div>
     <form class="entry wordForm" data-key="move">
       <input id="i-move" type="text" maxlength="60" enterkeyhint="done" placeholder="例：踊って">
       <button class="add" type="button">＋登録</button>
@@ -1310,7 +1310,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   </div>
 
   <div class="card" id="card-end">
-    <div class="rowhead"><b>⑤ どうした・どうなった</b><span id="c-end" class="count">登録 0 / 50</span></div>
+    <div class="rowhead"><b>⑤ どうした・どうなった</b><span id="c-end" class="count">登録 0 / 60</span></div>
     <form class="entry wordForm" data-key="end">
       <input id="i-end" type="text" maxlength="60" enterkeyhint="done" placeholder="例：逃げた">
       <button class="add" type="button">＋登録</button>
@@ -1395,7 +1395,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     for(var i=0;i<defs.length;i++){
       var key = defs[i].key;
       var el = document.getElementById("c-"+key);
-      if(el) el.textContent = "登録 " + words[key].length + " / 50";
+      if(el) el.textContent = "登録 " + words[key].length + " / 60";
     }
   }
 
@@ -1807,7 +1807,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       h.textContent = d.label;
       var count = document.createElement("span");
       count.className = "wordCount";
-      count.textContent = words[d.key].length + " / 50";
+      count.textContent = words[d.key].length + " / 60";
       head.appendChild(h); head.appendChild(count); group.appendChild(head);
 
       var addBox = document.createElement("div");
