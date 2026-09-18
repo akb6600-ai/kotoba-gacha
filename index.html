@@ -1434,7 +1434,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     var value = input.value.replace(/^\s+|\s+$/g,"");
     if(!value) return;
 
-    if(words[key].length >= 50){
+    if(words[key].length >= 60){
       notice("この項目は50個までです");
       return;
     }
@@ -1771,7 +1771,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   function addFromList(key, input, onlyKey){
     var value = input.value.replace(/^\s+|\s+$/g,"");
     if(!value) return;
-    if(words[key].length >= 50){ notice("この項目は50個までです"); return; }
+    if(words[key].length >= 60){ notice("この項目は50個までです"); return; }
     if(blocked(value)){ notice("📺 実演モードでは、その表現は登録できません"); return; }
     for(var i=0;i<words[key].length;i++){
       if(words[key][i] === value){ notice("同じ言葉はすでに登録されています"); return; }
