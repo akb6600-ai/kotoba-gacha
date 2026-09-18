@@ -1475,7 +1475,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   function appendUntil50(key, candidates){
     var seen = {};
     for(var i=0;i<words[key].length;i++) seen[words[key][i]] = true;
-    for(var j=0;j<candidates.length && words[key].length<25;j++){
+    for(var j=0;j<candidates.length && words[key].length<50;j++){
       var v = candidates[j];
       if(!seen[v]){
         words[key].push(v);
