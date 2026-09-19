@@ -1681,7 +1681,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     }
     var result = parts.join(" ");
 
-    // ガチャを押してから2.7秒後にナレーションを開始する。
+    // ガチャを押してから2秒後にナレーションを開始する。
     // 連続タップ時は、前回の待機中ナレーションを取り消す。
     var speechToggle = document.getElementById("speechToggle");
     if(narrationTimer){
@@ -1694,7 +1694,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       narrationTimer = window.setTimeout(function(){
         narrationTimer = null;
         speakJapanese(result);
-      },2700);
+      },2000);
     }
 
     var el = document.getElementById("resultText");
