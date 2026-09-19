@@ -1596,7 +1596,8 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     if(distance <= 8) return;
 
     /* JavaScriptで途中の位置を刻まず、GPUの直線アニメーションに任せる */
-    var duration = Math.max(1000, Math.round(distance / (2 / 18)));
+    /* 中央で読みやすいよう、従来より少しゆっくり流す */
+    var duration = Math.max(1000, Math.round(distance / (1.5 / 18)));
     function playScroll(){
       if(cycleId !== marqueeCycleId) return;
       el.style.transition = "transform "+duration+"ms linear";
