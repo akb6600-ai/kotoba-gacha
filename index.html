@@ -1672,6 +1672,13 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       window.clearTimeout(narrationTimer);
       narrationTimer = null;
     }
+    if(scrollStartTimer){
+      window.clearTimeout(scrollStartTimer);
+      scrollStartTimer = null;
+    }
+    var ticker = document.getElementById("ticker");
+    /* もう一度聴く時は、読み上げと同じタップでスクロールも先頭から開始 */
+    if(ticker) startMarquee(el,ticker);
     try{ window.speechSynthesis.cancel(); }catch(e){}
     unlockSpeechForIOS();
     speakJapanese(text);
