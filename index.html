@@ -1667,7 +1667,6 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   }
 
   window.doGacha = function(){
-    unlockSpeechForIOS();
     for(var i=0;i<defs.length;i++){
       if(words[defs[i].key].length === 0){
         notice("5つの項目すべてに、1個以上登録してください");
@@ -1681,8 +1680,8 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     }
     var result = parts.join(" ");
 
-    // iPhone Safariでは、ユーザーのタップ操作から時間が空くと
-    // 音声合成が開始されないことがあるため、ガチャのタップ直後に読み上げを開始する。
+    // ガチャのタップ操作から直接、待ち時間なしでナレーションを開始する。
+    // iPhone Safariでもユーザー操作の中で speak() を呼ぶ。
     var speechToggle = document.getElementById("speechToggle");
     if(speechToggle && speechToggle.checked){
       speakJapanese(result);
