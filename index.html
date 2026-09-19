@@ -1606,10 +1606,10 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
 
         window.setTimeout(function(){
           if(!scrollTimer) return;
-          /* 先頭へ戻し、0.5秒見せてから再び流す */
+          /* 先頭へ戻し、1.2秒見せてから再び流す */
           x = 0;
           el.style.transform = "translateX(0px)";
-          waitUntil = Date.now() + 500;
+          waitUntil = Date.now() + 1200;
           ending = false;
         },2000);
         return;
