@@ -1676,12 +1676,31 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       window.clearTimeout(scrollStartTimer);
       scrollStartTimer = null;
     }
+    if(scrollTimer){
+      window.cancelAnimationFrame(scrollTimer);
+      scrollTimer = null;
+    }
+    marqueeCycleId++;
+    if(scrollEndTimer){
+      window.clearTimeout(scrollEndTimer);
+      scrollEndTimer = null;
+    }
     var ticker = document.getElementById("ticker");
-    /* もう一度聴く時は、読み上げと同じタップでスクロールも先頭から開始 */
-    if(ticker) startMarquee(el,ticker);
+    /* 最初のガチャと同じく、頭を2.5秒見せてから流す */
+    el.style.transition = "none";
+    el.style.transform = "translateX(0px)";
     try{ window.speechSynthesis.cancel(); }catch(e){}
     unlockSpeechForIOS();
-    speakJapanese(text);
+    narrationTimer = window.setTimeout(function(){
+      narrationTimer = null;
+      speakJapanese(text);
+    },1800);
+    if(ticker){
+      scrollStartTimer = window.setTimeout(function(){
+        scrollStartTimer = null;
+        startMarquee(el,ticker);
+      },2500);
+    }
   };
 
   if("speechSynthesis" in window){
