@@ -1381,6 +1381,8 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   }
 
   var scrollTimer = null;
+  var scrollStartTimer = null;
+  var scrollEndTimer = null;
   var narrationTimer = null;
 
   function safeStore(){
@@ -1577,6 +1579,10 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       window.clearInterval(scrollTimer);
       scrollTimer = null;
     }
+    if(scrollEndTimer){
+      window.clearTimeout(scrollEndTimer);
+      scrollEndTimer = null;
+    }
 
     el.style.transition = "none";
     el.style.transform = "translateX(0px)";
@@ -1604,7 +1610,8 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
         ending = true;
         el.style.transform = "translateX("+x+"px)";
 
-        window.setTimeout(function(){
+        scrollEndTimer = window.setTimeout(function(){
+          scrollEndTimer = null;
           if(!scrollTimer) return;
           /* 先頭へ戻し、1.2秒見せてから再び流す */
           x = 0;
@@ -1708,6 +1715,14 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       window.clearInterval(scrollTimer);
       scrollTimer = null;
     }
+    if(scrollStartTimer){
+      window.clearTimeout(scrollStartTimer);
+      scrollStartTimer = null;
+    }
+    if(scrollEndTimer){
+      window.clearTimeout(scrollEndTimer);
+      scrollEndTimer = null;
+    }
 
     el.className = "resultText";
     el.style.transform = "translateX(0px)";
@@ -1722,7 +1737,8 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     void el.offsetWidth;
     el.className = "resultText show";
 
-    window.setTimeout(function(){
+    scrollStartTimer = window.setTimeout(function(){
+      scrollStartTimer = null;
       el.className = "resultText";
       el.style.opacity = "1";
       el.style.filter = "none";
