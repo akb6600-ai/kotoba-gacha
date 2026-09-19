@@ -4,20 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>言語郎™</title>
-<script>
-try{
-  var o=JSON.parse(localStorage.getItem("kotoba-gacha-v7")||"{}");
-  var n=JSON.parse(localStorage.getItem("kotoba-gacha-v8-60x50")||"{}");
-  ["who","place","with","move","end"].forEach(function(k){
-    var a=Array.isArray(o[k])?o[k].slice(0,60):[];
-    (Array.isArray(n[k])?n[k]:[]).forEach(function(v){
-      if(a.indexOf(v)<0&&a.length<60)a.push(v);
-    });
-    n[k]=a;
-  });
-  localStorage.setItem("kotoba-gacha-v8-60x50",JSON.stringify(n));
-}catch(e){}
-</script>
 <style>
 *{box-sizing:border-box}
 body{
@@ -1598,39 +1584,21 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     if(distance <= 8) return;
 
     var x = 0;
-    var pause = 30;
+    var pause = 18;
     var paused = 0;
 
     scrollTimer = window.setInterval(function(){
-      if(paused < 17){
+      if(paused < 8){
         paused++;
         return;
       }
 
-      x -= 3;
+      x -= 2;
 
       if(x <= -distance){
-
-  x = -distance;
-
-  el.style.transform = "translateX("+x+"px)";
-
-  window.clearInterval(scrollTimer);
-
-  scrollTimer = null;
-
-  window.setTimeout(function(){
-
-    startMarquee(el, ticker);
-
-  }, 2000);
-
-  return;
-
-}
-      
-      
-      
+        x = 0;
+        paused = 0;
+      }
 
       el.style.transform = "translateX("+x+"px)";
     }, pause);
@@ -1725,14 +1693,16 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     }
 
     void el.offsetWidth;
-    el.className = "resultText";
+    el.className = "resultText show";
 
-    el.style.opacity = "1";
+    window.setTimeout(function(){
+      el.className = "resultText";
+      el.style.opacity = "1";
+      el.style.filter = "none";
+      startMarquee(el,ticker);
 
-el.style.filter = "none";
-
-startMarquee(el,ticker);
-  
+    },2050);
+  };
 
   function deleteWord(key,index,onlyKey){
     var modal = document.querySelector("#modal .sheet");
