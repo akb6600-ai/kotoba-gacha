@@ -1610,9 +1610,27 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       x -= 3;
 
       if(x <= -distance){
-        x = 0;
-        paused = 0;
-      }
+
+  x = -distance;
+
+  el.style.transform = "translateX("+x+"px)";
+
+  window.clearInterval(scrollTimer);
+
+  scrollTimer = null;
+
+  window.setTimeout(function(){
+
+    startMarquee(el, ticker);
+
+  }, 2000);
+
+  return;
+
+}
+      
+      
+      
 
       el.style.transform = "translateX("+x+"px)";
     }, pause);
