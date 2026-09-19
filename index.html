@@ -1640,7 +1640,9 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       refreshJapaneseVoice();
       window.speechSynthesis.cancel();
       /* 表示は漢字のまま、読み上げだけ正しい発音に補正する */
-      var speechText = String(text).replace(/姪っ子/g,"めいっこ");
+      var speechText = String(text)
+        .replace(/姪っ子/g,"めいっこ")
+        .replace(/風呂場/g,"ふろば");
       var u = new SpeechSynthesisUtterance(speechText);
       u.lang = "ja-JP";
       u.rate = 1.02;
