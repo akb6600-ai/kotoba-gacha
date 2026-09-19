@@ -92,7 +92,7 @@ button{font-family:inherit}
   55%{opacity:.55;filter:blur(4px)}
   100%{opacity:1;filter:blur(0)}
 }
-.toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.toolbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .tool{padding:12px;background:#fff;border:1.5px solid #ddd;font-size:15px}
 .help{text-align:center;color:#777;font-size:12px;line-height:1.5;margin-top:8px}
 .footer{text-align:center;margin-top:18px;color:#555;font-weight:700;font-size:14px}
@@ -1342,6 +1342,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   <div class="toolbar">
     <button class="tool" id="saveBtn" type="button">💾 記憶</button>
     <button class="tool" id="listBtn" type="button">📋 一覧</button>
+    <button class="tool" id="replayBtn" type="button">🔊 もう一度聴く</button>
   </div>
 
   <div class="help">各項目60個まで。自動入力ボタン(50語)は遊ぶための見本、残り10枠はあなたの言葉を入れて育てるユーザー辞書です。</div>
@@ -1655,6 +1656,27 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     }catch(e){}
   }
 
+  window.replayNarration = function(){
+    var speechToggle = document.getElementById("speechToggle");
+    if(!speechToggle || !speechToggle.checked){
+      notice("🔊 読み上げをONにしてください");
+      return;
+    }
+    var el = document.getElementById("resultText");
+    var text = el ? String(el.textContent || "").replace(/^\s+|\s+$/g,"") : "";
+    if(!text || text === "ここに結果が出ます"){
+      notice("🎰 まずガチャを回してください");
+      return;
+    }
+    if(narrationTimer){
+      window.clearTimeout(narrationTimer);
+      narrationTimer = null;
+    }
+    try{ window.speechSynthesis.cancel(); }catch(e){}
+    unlockSpeechForIOS();
+    speakJapanese(text);
+  };
+
   if("speechSynthesis" in window){
     refreshJapaneseVoice();
     try{ window.speechSynthesis.addEventListener("voiceschanged", refreshJapaneseVoice); }catch(e){}
@@ -1920,6 +1942,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
 
   document.getElementById("saveBtn").addEventListener("click", manualSave);
   document.getElementById("listBtn").addEventListener("click", function(){ showList(); });
+  document.getElementById("replayBtn").addEventListener("click", replayNarration);
   document.getElementById("closeBtn").addEventListener("click", closeModal);
   document.getElementById("modal").addEventListener("click", function(e){
     if(e.target === this) closeModal();
