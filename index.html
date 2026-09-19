@@ -1620,10 +1620,10 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
 
         scrollEndTimer = window.setTimeout(function(){
           scrollEndTimer = null;
-          /* 先頭へ戻し、1.2秒見せてから再び流す */
+          /* 先頭へ戻し、1.0秒見せてから再び流す */
           x = 0;
           el.style.transform = "translate3d(0,0,0)";
-          waitUntil = performance.now() + 1200;
+          waitUntil = performance.now() + 1000;
           lastFrame = 0;
           ending = false;
           scrollTimer = window.requestAnimationFrame(moveFrame);
