@@ -1381,6 +1381,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   }
 
   var scrollTimer = null;
+  var narrationTimer = null;
 
   function safeStore(){
     try{
@@ -1680,11 +1681,20 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     }
     var result = parts.join(" ");
 
-    // ガチャのタップ操作から直接、待ち時間なしでナレーションを開始する。
-    // iPhone Safariでもユーザー操作の中で speak() を呼ぶ。
+    // ガチャを押してから2.7秒後にナレーションを開始する。
+    // 連続タップ時は、前回の待機中ナレーションを取り消す。
     var speechToggle = document.getElementById("speechToggle");
+    if(narrationTimer){
+      window.clearTimeout(narrationTimer);
+      narrationTimer = null;
+    }
     if(speechToggle && speechToggle.checked){
-      speakJapanese(result);
+      try{ window.speechSynthesis.cancel(); }catch(e){}
+      unlockSpeechForIOS();
+      narrationTimer = window.setTimeout(function(){
+        narrationTimer = null;
+        speakJapanese(result);
+      },2700);
     }
 
     var el = document.getElementById("resultText");
