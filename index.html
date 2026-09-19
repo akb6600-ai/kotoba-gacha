@@ -1344,7 +1344,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   </div>
 
   <div class="help">各項目60個まで。自動入力ボタン(50語)は遊ぶための見本、残り10枠はあなたの言葉を入れて育てるユーザー辞書です。</div>
-  <div class="footer">おかしいのは、あなたが登録した結果です。</div><div class="version">言語郎™ ver.1.3</div>
+  <div class="footer">おかしいのは、あなたが登録した言葉です。</div><div class="version">言語郎™ ver.1.3</div>
 </div>
 
 <div id="modal" class="modal">
@@ -1580,24 +1580,38 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     el.style.transition = "none";
     el.style.transform = "translateX(0px)";
 
-    var distance = el.scrollWidth - ticker.clientWidth + 8;
+    /* 最後の文字まで余裕を持って見せる */
+    var distance = el.scrollWidth - ticker.clientWidth + 20;
     if(distance <= 8) return;
 
     var x = 0;
     var pause = 18;
-    var paused = 0;
+    var waitUntil = 0;
+    var ending = false;
 
     scrollTimer = window.setInterval(function(){
-      if(paused < 8){
-        paused++;
+      if(ending) return;
+      if(Date.now() < waitUntil){
         return;
       }
 
       x -= 2;
 
       if(x <= -distance){
-        x = 0;
-        paused = 0;
+        /* おしりを全部見せた位置で2秒止める */
+        x = -distance;
+        ending = true;
+        el.style.transform = "translateX("+x+"px)";
+
+        window.setTimeout(function(){
+          if(!scrollTimer) return;
+          /* 先頭へ戻し、0.5秒見せてから再び流す */
+          x = 0;
+          el.style.transform = "translateX(0px)";
+          waitUntil = Date.now() + 500;
+          ending = false;
+        },2000);
+        return;
       }
 
       el.style.transform = "translateX("+x+"px)";
