@@ -1727,14 +1727,12 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     void el.offsetWidth;
     el.className = "resultText";
 
-    window.setTimeout(function(){
-      el.className = "resultText";
-      el.style.opacity = "1";
-      el.style.filter = "none";
-      startMarquee(el,ticker);
+    el.style.opacity = "1";
 
-    },2050);
-  };
+el.style.filter = "none";
+
+startMarquee(el,ticker);
+  
 
   function deleteWord(key,index,onlyKey){
     var modal = document.querySelector("#modal .sheet");
