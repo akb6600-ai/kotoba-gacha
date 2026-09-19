@@ -83,7 +83,8 @@ button{font-family:inherit}
   position:absolute;left:0;top:5px;
   white-space:nowrap;font-size:22px;font-weight:800;
   opacity:0;filter:blur(8px);
-  transform:translateX(0)
+  transform:translateX(0);
+  will-change:transform
 }
 .resultText.show{animation:ghostin 2s ease forwards}
 @keyframes ghostin{
@@ -1384,6 +1385,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   var scrollStartTimer = null;
   var scrollEndTimer = null;
   var narrationTimer = null;
+  var speechUnlocked = false;
 
   function safeStore(){
     try{
@@ -1576,7 +1578,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
 
   function startMarquee(el, ticker){
     if(scrollTimer){
-      window.clearInterval(scrollTimer);
+      window.cancelAnimationFrame(scrollTimer);
       scrollTimer = null;
     }
     if(scrollEndTimer){
@@ -1592,38 +1594,48 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     if(distance <= 8) return;
 
     var x = 0;
-    var pause = 18;
     var waitUntil = 0;
     var ending = false;
+    var lastFrame = 0;
+    /* 従来の2px/18msと同じ速度を、画面描画に同期して滑らかに動かす */
+    var pixelsPerMs = 2 / 18;
 
-    scrollTimer = window.setInterval(function(){
+    function moveFrame(now){
       if(ending) return;
-      if(Date.now() < waitUntil){
+      if(now < waitUntil){
+        scrollTimer = window.requestAnimationFrame(moveFrame);
         return;
       }
 
-      x -= 2;
+      if(!lastFrame) lastFrame = now;
+      x -= (now - lastFrame) * pixelsPerMs;
+      lastFrame = now;
 
       if(x <= -distance){
         /* おしりを全部見せた位置で2秒止める */
         x = -distance;
         ending = true;
-        el.style.transform = "translateX("+x+"px)";
+        scrollTimer = null;
+        el.style.transform = "translate3d("+x+"px,0,0)";
 
         scrollEndTimer = window.setTimeout(function(){
           scrollEndTimer = null;
-          if(!scrollTimer) return;
           /* 先頭へ戻し、1.2秒見せてから再び流す */
           x = 0;
-          el.style.transform = "translateX(0px)";
-          waitUntil = Date.now() + 1200;
+          el.style.transform = "translate3d(0,0,0)";
+          waitUntil = performance.now() + 1200;
+          lastFrame = 0;
           ending = false;
+          scrollTimer = window.requestAnimationFrame(moveFrame);
         },2000);
         return;
       }
 
-      el.style.transform = "translateX("+x+"px)";
-    }, pause);
+      el.style.transform = "translate3d("+x+"px,0,0)";
+      scrollTimer = window.requestAnimationFrame(moveFrame);
+    }
+
+    scrollTimer = window.requestAnimationFrame(moveFrame);
   }
 
   var preferredJaVoice = null;
@@ -1666,6 +1678,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   }
 
   function unlockSpeechForIOS(){
+    if(speechUnlocked) return;
     var speechToggle = document.getElementById("speechToggle");
     if(!speechToggle || !speechToggle.checked || !("speechSynthesis" in window)) return;
     try{
@@ -1675,6 +1688,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       unlock.volume = 0.01;
       if(preferredJaVoice) unlock.voice = preferredJaVoice;
       window.speechSynthesis.speak(unlock);
+      speechUnlocked = true;
     }catch(e){}
   }
 
@@ -1712,7 +1726,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     var ticker = document.getElementById("ticker");
 
     if(scrollTimer){
-      window.clearInterval(scrollTimer);
+      window.cancelAnimationFrame(scrollTimer);
       scrollTimer = null;
     }
     if(scrollStartTimer){
