@@ -1598,16 +1598,16 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     if(distance <= 8) return;
 
     var x = 0;
-    var pause = 18;
+    var pause = 30;
     var paused = 0;
 
     scrollTimer = window.setInterval(function(){
-      if(paused < 8){
+      if(paused < 17){
         paused++;
         return;
       }
 
-      x -= 2;
+      x -= 3;
 
       if(x <= -distance){
         x = 0;
