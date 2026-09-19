@@ -1639,7 +1639,9 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     try{
       refreshJapaneseVoice();
       window.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(text);
+      /* 表示は漢字のまま、読み上げだけ正しい発音に補正する */
+      var speechText = String(text).replace(/姪っ子/g,"めいっこ");
+      var u = new SpeechSynthesisUtterance(speechText);
       u.lang = "ja-JP";
       u.rate = 1.02;
       u.pitch = 1.00;
@@ -1681,7 +1683,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     }
     var result = parts.join(" ");
 
-    // ガチャを押してから1.9秒後にナレーションを開始する。
+    // ガチャを押してから1.8秒後にナレーションを開始する。
     // 連続タップ時は、前回の待機中ナレーションを取り消す。
     var speechToggle = document.getElementById("speechToggle");
     if(narrationTimer){
@@ -1694,7 +1696,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       narrationTimer = window.setTimeout(function(){
         narrationTimer = null;
         speakJapanese(result);
-      },1900);
+      },1800);
     }
 
     var el = document.getElementById("resultText");
