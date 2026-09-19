@@ -1386,6 +1386,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   var scrollEndTimer = null;
   var narrationTimer = null;
   var speechUnlocked = false;
+  var marqueeCycleId = 0;
 
   function safeStore(){
     try{
@@ -1577,6 +1578,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
   }
 
   function startMarquee(el, ticker){
+    var cycleId = ++marqueeCycleId;
     if(scrollTimer){
       window.cancelAnimationFrame(scrollTimer);
       scrollTimer = null;
@@ -1593,49 +1595,29 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     var distance = el.scrollWidth - ticker.clientWidth + 20;
     if(distance <= 8) return;
 
-    var x = 0;
-    var waitUntil = 0;
-    var ending = false;
-    var lastFrame = 0;
-    /* 従来の2px/18msと同じ速度を、画面描画に同期して滑らかに動かす */
-    var pixelsPerMs = 2 / 18;
-
-    function moveFrame(now){
-      if(ending) return;
-      if(now < waitUntil){
-        scrollTimer = window.requestAnimationFrame(moveFrame);
-        return;
-      }
-
-      if(!lastFrame) lastFrame = now;
-      x -= (now - lastFrame) * pixelsPerMs;
-      lastFrame = now;
-
-      if(x <= -distance){
-        /* おしりを全部見せた位置で2秒止める */
-        x = -distance;
-        ending = true;
+    /* JavaScriptで途中の位置を刻まず、GPUの直線アニメーションに任せる */
+    var duration = Math.max(1000, Math.round(distance / (2 / 18)));
+    function playScroll(){
+      if(cycleId !== marqueeCycleId) return;
+      el.style.transition = "transform "+duration+"ms linear";
+      scrollTimer = window.requestAnimationFrame(function(){
         scrollTimer = null;
-        el.style.transform = "translate3d("+x+"px,0,0)";
-
+        if(cycleId !== marqueeCycleId) return;
+        el.style.transform = "translate3d("+(-distance)+"px,0,0)";
+      });
+      scrollEndTimer = window.setTimeout(function(){
+        scrollEndTimer = null;
+        if(cycleId !== marqueeCycleId) return;
+        /* おしりを2秒見せ、先頭で1.0秒止めてから再び流す */
+        el.style.transition = "none";
+        el.style.transform = "translate3d(0,0,0)";
         scrollEndTimer = window.setTimeout(function(){
           scrollEndTimer = null;
-          /* 先頭へ戻し、1.0秒見せてから再び流す */
-          x = 0;
-          el.style.transform = "translate3d(0,0,0)";
-          waitUntil = performance.now() + 1000;
-          lastFrame = 0;
-          ending = false;
-          scrollTimer = window.requestAnimationFrame(moveFrame);
-        },2000);
-        return;
-      }
-
-      el.style.transform = "translate3d("+x+"px,0,0)";
-      scrollTimer = window.requestAnimationFrame(moveFrame);
+          playScroll();
+        },1000);
+      },duration + 2000);
     }
-
-    scrollTimer = window.requestAnimationFrame(moveFrame);
+    playScroll();
   }
 
   var preferredJaVoice = null;
@@ -1729,6 +1711,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
       window.cancelAnimationFrame(scrollTimer);
       scrollTimer = null;
     }
+    marqueeCycleId++;
     if(scrollStartTimer){
       window.clearTimeout(scrollStartTimer);
       scrollStartTimer = null;
@@ -1739,6 +1722,7 @@ input[type=text]:focus{border-color:#7dbbff !important;box-shadow:0 0 0 3px rgba
     }
 
     el.className = "resultText";
+    el.style.transition = "none";
     el.style.transform = "translateX(0px)";
     el.textContent = result;
 
