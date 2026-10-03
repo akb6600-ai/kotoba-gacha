@@ -60,7 +60,7 @@ export default {
 
     const prompt =
 
-      'Create a lively humorous Japanese manga-style one-panel illustration. ' +
+      'Create a lively humorous Japanese manga-style one-panel illustration in a horizontal 4:3 landscape composition. ' +
 
       (quality === 'low'
         ? 'Use a light, loose hand-drawn touch: thin gently sketchy lines, pale pastel colors, airy white space, minimal shading, and simple charming shapes. Keep the scene readable and playful, with expressive people and a lively atmosphere. Avoid heavy outlines, dense textures, dramatic lighting, and photorealism. '
@@ -92,7 +92,7 @@ export default {
 
           prompt,
 
-          size: '1024x1024',
+          size: '960x720',
 
           quality,
 
