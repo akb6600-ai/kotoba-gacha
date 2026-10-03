@@ -62,7 +62,9 @@ export default {
 
       'Create a lively humorous Japanese manga-style one-panel illustration. ' +
 
-      'Expressive people, warm colors, clean linework. ' +
+      (quality === 'low'
+        ? 'Use a light, loose hand-drawn touch: thin gently sketchy lines, pale pastel colors, airy white space, minimal shading, and simple charming shapes. Keep the scene readable and playful, with expressive people and a lively atmosphere. Avoid heavy outlines, dense textures, dramatic lighting, and photorealism. '
+        : 'Expressive people, warm colors, crisp clean linework, and carefully rendered details. ') +
 
       'Dogs and cats may appear naturally. Occasionally include a Chihuahua. ' +
 
@@ -135,3 +137,4 @@ export default {
   }
 
 };
+
