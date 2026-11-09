@@ -63,7 +63,7 @@ export default {
       'Create a lively humorous Japanese manga-style one-panel illustration in a horizontal 4:3 landscape composition. ' +
 
       (quality === 'low'
-        ? 'Use a light, loose hand-drawn touch: thin gently sketchy lines, pale pastel colors, airy white space, minimal shading, and simple charming shapes. Keep the scene readable and playful, with expressive people and a lively atmosphere. Avoid heavy outlines, dense textures, dramatic lighting, and photorealism. '
+        ? 'Use vivid, rich, saturated colors with strong contrast and bold, clean, clearly defined manga outlines. Give characters lively expressions, dynamic poses, and distinct colorful clothing. Make the composition bright, punchy, crisp, and immediately readable, with solid color fills and confident shading. Avoid washed-out colors, pale pastels, watercolor washes, faded or hazy looks, excessive white overlays, and photorealism. '
         : 'Expressive people, warm colors, crisp clean linework, and carefully rendered details. ') +
 
       'Dogs and cats may appear naturally. Occasionally include a Chihuahua. ' +
