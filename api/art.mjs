@@ -66,7 +66,7 @@ export default {
         ? 'Use vivid, rich, saturated colors with strong contrast and bold, clean, clearly defined manga outlines. Give characters lively expressions, dynamic poses, and distinct colorful clothing. Make the composition bright, punchy, crisp, and immediately readable, with solid color fills and confident shading. Avoid washed-out colors, pale pastels, watercolor washes, faded or hazy looks, excessive white overlays, and photorealism. '
         : 'Expressive people, warm colors, crisp clean linework, and carefully rendered details. ') +
 
-      'Dogs and cats may appear naturally. Occasionally include a Chihuahua. ' +
+      'Dogs and cats may appear naturally. When a Chihuahua appears, portray it as an irresistibly cute, small, friendly companion with a rounded expressive face, large sparkling gentle eyes, a tiny black nose, soft fluffy fur, neat petite ears, and a cheerful endearing expression; keep natural Chihuahua anatomy and avoid fierce, distorted, or scary features. ' +
 
       'No captions, logos, watermarks, or readable text. Scene: ' + text;
 
